@@ -25,6 +25,8 @@ pub struct DhtNodeManager {
     local_node: DhtNode,
     /// DHT storage with networking
     storage: Option<DhtStorage>,
+    /// Direct network interface for advanced operations
+    network: Option<DhtNetwork>,
     /// Node reputation tracking
     reputation_scores: std::collections::HashMap<NodeId, u32>,
     /// Local nodes collection when storage is not available
@@ -41,6 +43,7 @@ impl DhtNodeManager {
         Ok(Self {
             local_node,
             storage: None,
+            network: None,
             reputation_scores: std::collections::HashMap::new(),
             local_nodes: std::collections::HashMap::new(),
             message_stats: MessageStats::default(),
@@ -56,10 +59,12 @@ impl DhtNodeManager {
     ) -> Result<Self> {
         let local_node = Self::create_local_node(local_id, addresses)?;
         let storage = DhtStorage::new_with_network(local_node.clone(), bind_addr, max_storage_size).await?;
+        let network = DhtNetwork::new(local_node.clone(), bind_addr)?;
         
         Ok(Self {
             local_node,
             storage: Some(storage),
+            network: Some(network),
             reputation_scores: std::collections::HashMap::new(),
             local_nodes: std::collections::HashMap::new(),
             message_stats: MessageStats::default(),
@@ -241,6 +246,33 @@ impl DhtNodeManager {
             storage.retrieve_data(content_hash).await
         } else {
             Ok(None)
+        }
+    }
+
+    /// Send direct network message to a peer
+    pub async fn send_network_message(&self, target: &DhtNode, message: crate::types::dht_types::DhtMessage) -> Result<()> {
+        if let Some(network) = &self.network {
+            network.send_message(target, message).await
+        } else {
+            Err(anyhow!("Network not available"))
+        }
+    }
+
+    /// Ping a specific node through direct network interface
+    pub async fn ping_node(&self, target: &DhtNode) -> Result<bool> {
+        if let Some(network) = &self.network {
+            network.ping(target).await
+        } else {
+            Err(anyhow!("Network not available"))
+        }
+    }
+
+    /// Find nodes through direct network interface
+    pub async fn find_network_nodes(&self, target: &DhtNode, query_id: crate::types::NodeId) -> Result<Vec<DhtNode>> {
+        if let Some(network) = &self.network {
+            network.find_node(target, query_id).await
+        } else {
+            Err(anyhow!("Network not available"))
         }
     }
 }

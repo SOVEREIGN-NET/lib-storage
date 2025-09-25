@@ -22,17 +22,20 @@ pub struct DhtPeerManager {
     max_peers: usize,
     /// Minimum reputation score for peers
     min_reputation: u32,
+    /// Kademlia router for intelligent peer selection
+    router: KademliaRouter,
 }
 
 impl DhtPeerManager {
     /// Create a new peer manager
     pub fn new(local_id: NodeId, max_peers: usize, min_reputation: u32) -> Self {
         Self {
-            local_id,
+            local_id: local_id.clone(),
             peers: HashMap::new(),
             peer_stats: HashMap::new(),
             max_peers,
             min_reputation,
+            router: KademliaRouter::new(local_id, 20),
         }
     }
     
@@ -77,7 +80,10 @@ impl DhtPeerManager {
             last_updated: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
         };
         
-        self.peer_stats.insert(node.id, stats);
+        self.peer_stats.insert(node.id.clone(), stats);
+        
+        // Add to routing table for intelligent peer selection
+        self.router.add_node(node).await?;
         
         Ok(())
     }
@@ -85,6 +91,7 @@ impl DhtPeerManager {
     /// Remove a peer
     pub fn remove_peer(&mut self, peer_id: &NodeId) -> Option<PeerInfo> {
         self.peer_stats.remove(peer_id);
+        self.router.remove_node(peer_id);
         self.peers.remove(peer_id)
     }
     
@@ -201,6 +208,24 @@ impl DhtPeerManager {
         Ok(())
     }
     
+    /// Find closest peers to a target using Kademlia routing
+    pub fn find_closest_peers(&self, target: &NodeId, count: usize) -> Vec<&DhtNode> {
+        self.router.find_closest_nodes(target, count)
+            .iter()
+            .filter_map(|node| self.peers.get(&node.id).map(|info| &info.node))
+            .collect()
+    }
+
+    /// Update peer responsiveness in routing table
+    pub fn update_peer_responsiveness(&mut self, peer_id: &NodeId, responsive: bool) -> Result<()> {
+        if responsive {
+            self.router.mark_node_responsive(peer_id)?;
+        } else {
+            self.router.mark_node_failed(peer_id);
+        }
+        Ok(())
+    }
+
     /// Get peer management statistics
     pub fn get_management_stats(&self) -> PeerManagementStats {
         let total_peers = self.peers.len();

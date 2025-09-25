@@ -225,11 +225,27 @@ impl DhtMessaging {
     
     /// Clear expired pending responses
     pub fn cleanup_expired_responses(&mut self, max_age: Duration) {
-        // In a real implementation, we would track response timestamps
-        // and remove expired entries. For now, we'll keep this simple.
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+        
+        let cutoff_time = now.saturating_sub(max_age.as_secs());
+        
+        // Remove expired responses (cleanup old senders that are likely closed)
+        // In a full implementation, we'd track response timestamps separately
         if self.pending_responses.len() > 1000 {
-            // Clear all if too many pending
             self.pending_responses.clear();
+        }
+        
+        // Also remove old queued messages
+        self.outgoing_queue.retain(|queued_msg| {
+            queued_msg.message.timestamp > cutoff_time
+        });
+        
+        // Log cleanup activity
+        if self.pending_responses.len() > 100 {
+            println!("🧹 Cleaned up expired responses, {} remaining", self.pending_responses.len());
         }
     }
 }

@@ -11,7 +11,7 @@ use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use lib_crypto::Hash;
-use rand::Rng;
+
 
 /// Reward manager for storage providers
 #[derive(Debug)]

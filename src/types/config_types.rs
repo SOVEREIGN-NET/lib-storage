@@ -4,7 +4,6 @@
 //! storage configuration, erasure coding configuration, and system parameters.
 
 use std::path::PathBuf;
-use serde::{Deserialize, Serialize};
 
 /// Storage system configuration
 #[derive(Debug, Clone)]

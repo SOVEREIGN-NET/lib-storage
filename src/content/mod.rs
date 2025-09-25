@@ -5,7 +5,7 @@
 //! Enhanced with real encryption and key management using lib-crypto.
 
 use crate::types::*;
-use crate::types::economic_types::{EconomicManagerConfig, PaymentSchedule, EscrowCondition, DisputeResolution,
+use crate::types::economic_types::{EconomicManagerConfig, PaymentSchedule, DisputeResolution,
                                    QualityRequirements, BudgetConstraints, EconomicStorageRequest, 
                                    PaymentPreferences, EscrowPreferences}; // Explicit import
 use crate::dht::storage::DhtStorage;
@@ -14,7 +14,7 @@ use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use lib_crypto::{Hash, KeyPair, encrypt_data, decrypt_data, derive_keys, hash_blake3};
-use lib_identity::{ZhtpIdentity, IdentityId};
+use lib_identity::ZhtpIdentity;
 
 /// High-level content manager with real encryption and key management
 #[derive(Debug)]
@@ -839,6 +839,7 @@ impl Default for ContentManager {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use lib_identity::IdentityId;
 
     #[tokio::test]
     async fn test_content_manager_creation() {

@@ -11,6 +11,37 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tokio::time::timeout;
 use serde::{Serialize, Deserialize};
 
+/// Network envelope for DHT messages with metadata
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NetworkEnvelope {
+    /// The actual DHT message
+    pub message: DhtMessage,
+    /// Network-level metadata
+    pub metadata: NetworkMetadata,
+}
+
+/// Network metadata for message routing and reliability
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NetworkMetadata {
+    /// Message sequence number
+    pub sequence: u64,
+    /// Network protocol version
+    pub version: u8,
+    /// Hop count for routing
+    pub hop_count: u8,
+    /// Message priority
+    pub priority: MessagePriority,
+}
+
+/// Message priority levels
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum MessagePriority {
+    Low,
+    Normal,
+    High,
+    Critical,
+}
+
 /// DHT network manager for UDP communication
 #[derive(Debug)]
 pub struct DhtNetwork {
@@ -199,7 +230,7 @@ impl DhtNetwork {
     }
     
     /// Handle incoming message and generate appropriate response
-    pub async fn handle_incoming_message(&self, message: DhtMessage, sender_addr: SocketAddr) -> Result<Option<DhtMessage>> {
+    pub async fn handle_incoming_message(&self, message: DhtMessage, _sender_addr: SocketAddr) -> Result<Option<DhtMessage>> {
         match message.message_type {
             DhtMessageType::Ping => {
                 Ok(Some(DhtMessage {

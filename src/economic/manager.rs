@@ -6,18 +6,16 @@
 //! - Reputation updates
 //! - Market operations
 
-use crate::types::{NodeId, ContentHash, PenaltyType, RewardTier, EconomicManagerConfig, 
-                   EconomicStorageRequest, EconomicQuote, QualityRequirements, BudgetConstraints,
-                   PaymentPreferences, EconomicStats, QualityMetrics, CostBreakdown, PenaltyClause,
+use crate::types::{ContentHash, PenaltyType, RewardTier, EconomicManagerConfig, 
+                   EconomicStorageRequest, EconomicQuote, EconomicStats, QualityMetrics, CostBreakdown, PenaltyClause,
                    StorageTier, EncryptionLevel, AccessPattern, QualityViolation,
                    PricingRequest}; // Add missing enum imports
 use crate::economic::{contracts::*, pricing::*, market::*, reputation::*, payments::*, 
                       incentives::{IncentiveSystem, IncentiveConfig}, quality::*, penalties::*, rewards::*};
 use anyhow::{Result, anyhow};
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
+
 use lib_crypto::Hash;
-use rand::Rng;
+
 
 /// Economic storage manager that coordinates all economic activities
 #[derive(Debug)]
@@ -87,11 +85,11 @@ impl EconomicStorageManager {
         // Calculate storage price
         let price_quote = self.pricing_engine.calculate_quote(&storage_request)?;
 
-        // Find suitable storage providers
-        let storage_nodes = self.market_manager.find_storage_providers(
+        // Find suitable storage providers using quality requirements
+        let storage_nodes = self.market_manager.find_storage_providers_with_quality(
             request.content.len() as u64,
             request.requirements.duration_days,
-            None, // No specific quality requirements filter for now
+            &request.requirements.quality_requirements,
         );
 
         if storage_nodes.is_empty() {
@@ -229,14 +227,49 @@ impl EconomicStorageManager {
 
         // Distribute rewards to storage providers
         if let Some(contract) = self.contract_manager.get_contract(&contract_id.to_string()) {
-            let reward_per_node = payment_amount / contract.nodes.len() as u64;
+            let base_reward_per_node = payment_amount / contract.nodes.len() as u64;
             
             for node_id in &contract.nodes {
-                self.reward_manager.distribute_rewards(
-                    node_id.clone(),
-                    reward_per_node,
-                    format!("Payment for contract {}", contract_id),
-                )?;
+                // Get provider's current performance for incentive calculation
+                if let Some(metrics) = self.quality_assurance.get_node_metrics(node_id).await? {
+                    let performance_snapshot = crate::types::PerformanceSnapshot::new(
+                        metrics.uptime,
+                        metrics.avg_response_time,
+                        metrics.data_integrity,
+                        (metrics.bandwidth_utilization * 1_000_000.0) as u64, // Convert bandwidth utilization to throughput
+                        0.01, // Default low error rate
+                    );
+
+                    // Calculate performance-based bonus from incentive system
+                    let performance_bonus = self.incentive_manager.calculate_payment_bonus(
+                        &node_id.to_string(),
+                        performance_snapshot,
+                        base_reward_per_node,
+                    ).await?;
+
+                    let total_reward = base_reward_per_node + performance_bonus;
+
+                    // Distribute base reward
+                    self.reward_manager.distribute_rewards(
+                        node_id.clone(),
+                        total_reward,
+                        format!("Payment with performance bonus for contract {}", contract_id),
+                    )?;
+
+                    // Update incentive system with successful payment
+                    self.incentive_manager.record_successful_payment(
+                        &node_id.to_string(),
+                        total_reward,
+                        format!("Contract {} payment", contract_id),
+                    ).await?;
+                } else {
+                    // Fallback to base reward if no metrics available
+                    self.reward_manager.distribute_rewards(
+                        node_id.clone(),
+                        base_reward_per_node,
+                        format!("Payment for contract {}", contract_id),
+                    )?;
+                }
             }
         }
 
@@ -252,6 +285,31 @@ impl EconomicStorageManager {
         for node_id in &contract.nodes {
             // Get performance metrics from quality assurance
             if let Some(metrics) = self.quality_assurance.get_node_metrics(node_id).await? {
+                // Create performance snapshot for incentive system
+                let performance_snapshot = crate::types::PerformanceSnapshot::new(
+                    metrics.uptime,
+                    metrics.avg_response_time,
+                    metrics.data_integrity,
+                    (metrics.bandwidth_utilization * 1_000_000.0) as u64, // Convert bandwidth utilization to throughput
+                    0.01, // Default low error rate
+                );
+
+                // Calculate incentive rewards based on performance with reputation integration
+                let incentive_reward = self.incentive_manager.calculate_performance_rewards_with_reputation(
+                    &node_id.to_string(),
+                    performance_snapshot,
+                    &self.reputation_system,
+                ).await?;
+
+                // Distribute incentive rewards if performance meets thresholds
+                if incentive_reward > 0 {
+                    self.reward_manager.distribute_rewards(
+                        node_id.clone(),
+                        incentive_reward,
+                        format!("Performance incentive for contract {}", contract_id),
+                    )?;
+                }
+
                 // Check for violations
                 let violations = self.penalty_enforcer.check_violations(&Hash::from_bytes(contract.contract_id.as_bytes()), node_id)?;
 
@@ -282,6 +340,13 @@ impl EconomicStorageManager {
                             details: format!("Performance violation: {:?}", violation),
                         };
                         self.reputation_system.record_violation(node_id.clone(), quality_violation).await?;
+
+                        // Update incentive system with penalty information
+                        self.incentive_manager.record_penalty(
+                            &node_id.to_string(),
+                            penalty_amount,
+                            format!("Penalty for {:?}", violation),
+                        ).await?;
                     }
                 }
 
@@ -471,7 +536,7 @@ mod tests {
         use lib_identity::types::{IdentityType, AccessLevel};
         use lib_proofs::ZeroKnowledgeProof;
         use std::collections::HashMap;
-        use crate::IdentityId;
+        use lib_identity::IdentityId;
         use lib_identity::wallets::WalletManager;
 
         let identity_id = IdentityId::from_bytes(&[1u8; 32]);

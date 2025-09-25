@@ -26,27 +26,33 @@ pub mod content;
 // Erasure coding module
 pub mod erasure;
 
-// Re-export all types for convenience
+// Re-export core types (avoiding conflicts)
 pub use types::{
-    dht_types::*, storage_types::*, economic_types::*, config_types::*, stats_types::*
+    dht_types::*, storage_types::*, stats_types::*
 };
-use types::economic_types::EconomicManagerConfig; // Explicit import
+
+// Re-export economic types explicitly to avoid conflicts  
+pub use types::economic_types::{
+    EconomicManagerConfig, EconomicStats, EconomicStorageRequest, EconomicQuote,
+    StorageRequirements, PaymentPreferences, QualityRequirements, BudgetConstraints
+};
+
+// Re-export DHT and content management
 pub use dht::*;
-pub use economic::*;
+pub use economic::{
+    pricing::*, market::*, reputation::*, payments::*, incentives::*, 
+    quality::*, penalties::*, rewards::*, manager::*
+};
 pub use content::{ContentManager, UploadRequest, DownloadRequest, SearchQuery, AccessControlSettings, ContentStorageRequirements};
 pub use erasure::*;
 
-use anyhow::{Result, anyhow};
-use std::collections::HashMap;
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use lib_crypto::{Hash, PostQuantumSignature}; // Add PostQuantumSignature import
-use lib_identity::{ZhtpIdentity, IdentityId};
-use rand::Rng;
+use lib_crypto::{Hash, PostQuantumSignature};
+use lib_identity::ZhtpIdentity;
 
 // Import specific types from our own modules
-use crate::types::{NodeId, ContentHash, EconomicStats, EconomicStorageRequest, EconomicQuote, 
-                   PenaltyType, QualityRequirements, BudgetConstraints, STORAGE_PRICE_PER_GB_DAY, 
-                   MIN_REPLICATION, MAX_REPLICATION};
+use crate::types::{NodeId, ContentHash};
 
 /// Unified storage system that integrates all components
 #[derive(Debug)]
@@ -467,6 +473,8 @@ pub type UnifiedStorageManager = UnifiedStorageSystem;
 mod tests {
     use super::*;
     use tempfile::tempdir;
+    use lib_identity::IdentityId;
+    use crate::types::{PenaltyType, STORAGE_PRICE_PER_GB_DAY, MIN_REPLICATION, MAX_REPLICATION};
     
     #[test]
     fn test_type_definitions() {

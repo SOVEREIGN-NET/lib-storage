@@ -4,7 +4,7 @@
 //! including nodes, messages, routing, and zero-knowledge values.
 
 use crate::types::{NodeId, DhtKey, ChunkMetadata};
-use lib_crypto::{Hash, PostQuantumSignature};
+use lib_crypto::PostQuantumSignature;
 use lib_proofs::{ZeroKnowledgeProof, ZkProof};
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
@@ -258,7 +258,7 @@ pub struct ReplicationStatus {
 
 /// DHT message types for peer communication (legacy enum for compatibility)
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum DhtMessage_Legacy {
+pub enum DhtMessageLegacy {
     /// Ping to check node availability
     Ping {
         sender: DhtNode,

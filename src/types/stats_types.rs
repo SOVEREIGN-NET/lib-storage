@@ -54,6 +54,29 @@ pub struct ContractStats {
     pub breached_contracts: u64,
 }
 
+/// Contract performance evaluation report
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractPerformanceReport {
+    /// Contract identifier
+    pub contract_id: String,
+    /// Overall performance score (0.0-1.0)
+    pub performance_score: f64,
+    /// Performance category (Excellent, Good, etc.)
+    pub performance_category: String,
+    /// SLA compliance percentage
+    pub sla_compliance: f64,
+    /// Uptime percentage
+    pub uptime_percentage: f64,
+    /// Average response time in milliseconds
+    pub avg_response_time: u64,
+    /// Data integrity score
+    pub data_integrity_score: f64,
+    /// Performance improvement recommendations
+    pub recommendations: Vec<String>,
+    /// When this evaluation was performed
+    pub evaluation_timestamp: u64,
+}
+
 /// Storage system statistics
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StorageStats {

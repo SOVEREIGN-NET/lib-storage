@@ -96,22 +96,48 @@ impl DhtReplication {
     
     /// Replicate data to a specific node
     async fn replicate_to_node(&self, key: &str, value: &[u8], target_node: &DhtNode) -> Result<()> {
-        // In a real implementation, this would use the DHT network layer
-        // to send the data to the target node
-        // For now, we'll simulate the operation
-        
+        // Check node reputation before attempting replication
         if target_node.reputation < 500 {
-            return Err(anyhow!("Target node reputation too low"));
+            return Err(anyhow!("Target node reputation too low: {}", target_node.reputation));
         }
+
+        // Create DHT store message for replication
+        let _message = crate::types::dht_types::DhtMessage {
+            message_id: hex::encode(&blake3::hash(&[key.as_bytes(), value, &target_node.id.as_bytes()].concat()).as_bytes()[..8]),
+            message_type: crate::types::dht_types::DhtMessageType::Store,
+            sender_id: self.local_id.clone(),
+            target_id: Some(target_node.id.clone()),
+            key: Some(key.to_string()),
+            value: Some(value.to_vec()),
+            nodes: None, // Not needed for store operation
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+            signature: None, // Would be signed in production
+        };
+
+        // Send replication message to target node
+        // In a real implementation, this would use the network layer
+        // For now, we'll log the replication attempt and simulate success
+        println!("🔄 Replicating key '{}' ({} bytes) to node {}", 
+                key, 
+                value.len(), 
+                hex::encode(&target_node.id.as_bytes()[..4]));
+
+        // Log successful replication (metrics would be handled by a separate metrics system)
+        println!("✅ Replication message created for key '{}'", key);
         
-        // Simulate network delay and potential failures
-        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+        // Simulate realistic network delay based on data size
+        let delay_ms = (value.len() / 1024).max(10).min(1000); // 10ms to 1s based on size
+        tokio::time::sleep(std::time::Duration::from_millis(delay_ms as u64)).await;
         
-        // Simulate 90% success rate
-        if rand::random::<f64>() < 0.9 {
+        // Simulate realistic success rate based on node reputation
+        let success_rate = (target_node.reputation as f64 / 1000.0).min(1.0);
+        if rand::random::<f64>() < success_rate {
             Ok(())
         } else {
-            Err(anyhow!("Network error during replication"))
+            Err(anyhow!("Network error during replication to node with reputation {}", target_node.reputation))
         }
     }
     

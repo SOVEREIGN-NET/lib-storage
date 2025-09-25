@@ -7,12 +7,12 @@
 //! - Dispute resolution with fund protection
 //! - Cross-chain payment support
 
-use crate::types::*;
-use crate::economic::contracts::*;
+use crate::types::{PaymentStatus, PaymentType, EscrowCondition, DisputeResolution};
+use crate::economic::contracts::ContractStatus;
 use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use lib_crypto::{Hash, PostQuantumSignature};
+use lib_crypto::PostQuantumSignature;
 
 /// Payment processor for storage contracts
 #[derive(Debug)]
@@ -89,34 +89,7 @@ pub struct PaymentRecord {
     pub description: String,
 }
 
-/// Types of payments in the system
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum PaymentType {
-    /// Initial escrow deposit
-    EscrowDeposit,
-    /// Regular service payment
-    ServicePayment,
-    /// Performance bonus
-    PerformanceBonus,
-    /// SLA penalty
-    SlaPenalty,
-    /// Dispute resolution
-    DisputeResolution,
-    /// Refund payment
-    Refund,
-    /// Network fee
-    NetworkFee,
-}
-
-/// Payment status tracking
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum PaymentStatus {
-    Pending,
-    Confirmed,
-    Failed,
-    Cancelled,
-    Disputed,
-}
+// PaymentType and PaymentStatus are imported from crate::types
 
 /// Pending payment awaiting execution
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -356,12 +329,12 @@ impl PaymentProcessor {
             payer: "client".to_string(), // Would be actual client ID
             payee: "escrow".to_string(),
             amount: initial_deposit,
-            payment_type: PaymentType::EscrowDeposit,
+            payment_type: PaymentType::Deposit,
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_secs(),
-            status: PaymentStatus::Confirmed,
+            status: PaymentStatus::Completed,
             tx_hash: None,
             description: "Initial escrow deposit".to_string(),
         };
@@ -484,12 +457,12 @@ impl PaymentProcessor {
             payer: "escrow".to_string(),
             payee: payment.recipient.clone(),
             amount: payment.amount,
-            payment_type: PaymentType::ServicePayment,
+            payment_type: PaymentType::Storage,
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
                 .as_secs(),
-            status: PaymentStatus::Confirmed,
+            status: PaymentStatus::Completed,
             tx_hash: None,
             description: format!("Payment for {:?}", payment.reason),
         };

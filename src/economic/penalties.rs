@@ -11,11 +11,11 @@ use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use lib_crypto::Hash;
-use rand::Rng;
+
 
 /// Storage performance metrics
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PerformanceMetrics {
+pub struct PenaltyPerformanceMetrics {
     /// Data integrity score (0.0 to 1.0)
     pub data_integrity: f64,
     /// Uptime percentage (0.0 to 1.0)
@@ -34,7 +34,7 @@ pub struct PenaltyEnforcer {
     /// Active penalty clauses by contract
     penalty_clauses: HashMap<Hash, Vec<PenaltyClause>>,
     /// Performance metrics by node
-    node_metrics: HashMap<NodeId, PerformanceMetrics>,
+    node_metrics: HashMap<NodeId, PenaltyPerformanceMetrics>,
     /// Penalty history
     penalty_history: Vec<PenaltyEvent>,
 }
@@ -74,7 +74,7 @@ impl PenaltyEnforcer {
     }
 
     /// Update node performance metrics
-    pub fn update_node_metrics(&mut self, node_id: NodeId, metrics: PerformanceMetrics) {
+    pub fn update_node_metrics(&mut self, node_id: NodeId, metrics: PenaltyPerformanceMetrics) {
         self.node_metrics.insert(node_id, metrics);
     }
 
@@ -98,7 +98,7 @@ impl PenaltyEnforcer {
     }
 
     /// Check if metrics constitute a violation
-    fn is_violation(&self, penalty_type: &PenaltyType, metrics: &PerformanceMetrics) -> Result<bool> {
+    fn is_violation(&self, penalty_type: &PenaltyType, metrics: &PenaltyPerformanceMetrics) -> Result<bool> {
         match penalty_type {
             PenaltyType::DataLoss => Ok(metrics.data_integrity < 0.99),
             PenaltyType::Unavailability => Ok(metrics.uptime < 0.95),
@@ -219,7 +219,7 @@ mod tests {
     fn test_violation_detection() {
         let enforcer = PenaltyEnforcer::new();
         
-        let metrics = PerformanceMetrics {
+        let metrics = PenaltyPerformanceMetrics {
             data_integrity: 0.98, // Below threshold
             uptime: 0.99,
             avg_response_time: 1000,

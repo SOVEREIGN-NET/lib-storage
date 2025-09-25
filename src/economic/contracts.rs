@@ -9,11 +9,11 @@
 
 use crate::types::*;
 use crate::types::economic_types::{PaymentSchedule, DisputeResolution};
-use crate::economic::pricing::*;
 use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use lib_crypto::{Hash, PostQuantumSignature};
+use uuid::Uuid;
 
 /// Erasure coding parameters for data redundancy
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -383,7 +383,7 @@ impl ContractManager {
         sla: ServiceLevelAgreement,
         payment: PaymentTerms,
     ) -> Result<String> {
-        let contract_id = format!("contract_{}", uuid::Uuid::new_v4());
+        let contract_id = format!("contract_{}", Uuid::new_v4());
         
         let expires_at = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -609,6 +609,176 @@ impl ContractManager {
             .filter(|c| c.status == ContractStatus::Active)
             .collect()
     }
+
+    // Template Management Methods
+
+    /// Create a new contract template
+    pub fn create_template(
+        &mut self,
+        name: String,
+        description: String,
+        default_terms: ContractTerms,
+        default_sla: ServiceLevelAgreement,
+        supported_tiers: Vec<StorageTier>,
+    ) -> Result<String> {
+        let template_id = format!("template_{}", Uuid::new_v4());
+        
+        let template = ContractTemplate {
+            name,
+            default_terms,
+            default_sla,
+            description,
+            supported_tiers,
+        };
+
+        self.templates.insert(template_id.clone(), template);
+        Ok(template_id)
+    }
+
+    /// Get a contract template by ID
+    pub fn get_template(&self, template_id: &str) -> Option<&ContractTemplate> {
+        self.templates.get(template_id)
+    }
+
+    /// List all available templates
+    pub fn list_templates(&self) -> Vec<&ContractTemplate> {
+        self.templates.values().collect()
+    }
+
+    /// Update an existing template
+    pub fn update_template(
+        &mut self,
+        template_id: &str,
+        name: Option<String>,
+        description: Option<String>,
+        default_terms: Option<ContractTerms>,
+        default_sla: Option<ServiceLevelAgreement>,
+        supported_tiers: Option<Vec<StorageTier>>,
+    ) -> Result<()> {
+        let template = self.templates.get_mut(template_id)
+            .ok_or_else(|| anyhow!("Template not found"))?;
+
+        if let Some(name) = name {
+            template.name = name;
+        }
+        if let Some(description) = description {
+            template.description = description;
+        }
+        if let Some(terms) = default_terms {
+            template.default_terms = terms;
+        }
+        if let Some(sla) = default_sla {
+            template.default_sla = sla;
+        }
+        if let Some(tiers) = supported_tiers {
+            template.supported_tiers = tiers;
+        }
+
+        Ok(())
+    }
+
+    /// Delete a template
+    pub fn delete_template(&mut self, template_id: &str) -> Result<()> {
+        self.templates.remove(template_id)
+            .ok_or_else(|| anyhow!("Template not found"))?;
+        Ok(())
+    }
+
+    /// Create a contract from a template
+    pub fn create_contract_from_template(
+        &mut self,
+        template_id: &str,
+        client_id: String,
+        provider_id: String,
+        payment_terms: PaymentTerms,
+        customizations: Option<ContractCustomizations>,
+    ) -> Result<String> {
+        let template = self.templates.get(template_id)
+            .ok_or_else(|| anyhow!("Template not found"))?;
+
+        let mut terms = template.default_terms.clone();
+        let mut sla = template.default_sla.clone();
+
+        // Apply customizations if provided
+        if let Some(custom) = customizations {
+            if let Some(storage_size) = custom.storage_size {
+                terms.storage_size = storage_size;
+            }
+            if let Some(duration) = custom.duration {
+                terms.duration = duration;
+            }
+            if let Some(tier) = custom.tier {
+                // Validate that the tier is supported by the template
+                if !template.supported_tiers.contains(&tier) {
+                    return Err(anyhow!("Storage tier {:?} not supported by template", tier));
+                }
+                terms.tier = tier;
+            }
+            if let Some(replication_factor) = custom.replication_factor {
+                terms.replication_factor = replication_factor;
+            }
+            if let Some(geographic_requirements) = custom.geographic_requirements {
+                terms.geographic_requirements = geographic_requirements;
+            }
+            if let Some(min_uptime) = custom.min_uptime {
+                sla.min_uptime = min_uptime;
+            }
+            if let Some(max_read_latency) = custom.max_read_latency {
+                sla.max_read_latency = max_read_latency;
+            }
+            if let Some(max_write_latency) = custom.max_write_latency {
+                sla.max_write_latency = max_write_latency;
+            }
+        }
+
+        self.create_contract(client_id, provider_id, terms, sla, payment_terms)
+    }
+
+    /// Find templates by storage tier
+    pub fn find_templates_by_tier(&self, tier: &StorageTier) -> Vec<&ContractTemplate> {
+        self.templates.values()
+            .filter(|template| template.supported_tiers.contains(tier))
+            .collect()
+    }
+
+    /// Validate template compatibility with requirements
+    pub fn validate_template_compatibility(
+        &self,
+        template_id: &str,
+        required_tier: &StorageTier,
+        min_uptime: f64,
+        max_latency: u64,
+    ) -> Result<bool> {
+        let template = self.templates.get(template_id)
+            .ok_or_else(|| anyhow!("Template not found"))?;
+
+        let tier_supported = template.supported_tiers.contains(required_tier);
+        let uptime_compatible = template.default_sla.min_uptime >= min_uptime;
+        let latency_compatible = template.default_sla.max_read_latency <= max_latency;
+
+        Ok(tier_supported && uptime_compatible && latency_compatible)
+    }
+}
+
+/// Contract customizations for template-based contract creation
+#[derive(Debug, Clone)]
+pub struct ContractCustomizations {
+    /// Custom storage size
+    pub storage_size: Option<u64>,
+    /// Custom contract duration
+    pub duration: Option<u64>,
+    /// Custom storage tier
+    pub tier: Option<StorageTier>,
+    /// Custom replication factor
+    pub replication_factor: Option<u8>,
+    /// Custom geographic requirements
+    pub geographic_requirements: Option<Vec<String>>,
+    /// Custom minimum uptime requirement
+    pub min_uptime: Option<f64>,
+    /// Custom maximum read latency
+    pub max_read_latency: Option<u64>,
+    /// Custom maximum write latency
+    pub max_write_latency: Option<u64>,
 }
 
 /// Contract signer types
@@ -656,6 +826,86 @@ impl ContractManager {
                 .filter(|contract| matches!(contract.status, ContractStatus::Breached))
                 .count() as u64,
         })
+    }
+
+    /// Evaluate contract performance and get detailed performance report
+    pub fn evaluate_contract_performance(&self, contract_id: &str) -> anyhow::Result<ContractPerformanceReport> {
+        let contract = self.get_contract(contract_id)
+            .ok_or_else(|| anyhow::anyhow!("Contract not found"))?;
+
+        let performance_score = self.calculate_performance_score(contract);
+        
+        let performance_category = if performance_score >= 0.9 {
+            "Excellent"
+        } else if performance_score >= 0.8 {
+            "Good"
+        } else if performance_score >= 0.7 {
+            "Satisfactory" 
+        } else if performance_score >= 0.6 {
+            "Needs Improvement"
+        } else {
+            "Poor"
+        };
+
+        let recommendations = self.generate_performance_recommendations(contract, performance_score);
+
+        Ok(ContractPerformanceReport {
+            contract_id: contract_id.to_string(),
+            performance_score,
+            performance_category: performance_category.to_string(),
+            sla_compliance: 1.0 - (contract.performance.sla_violations.len() as f64 / 10.0).min(1.0), // Calculate from violations
+            uptime_percentage: contract.performance.uptime,
+            avg_response_time: (contract.performance.avg_read_latency + contract.performance.avg_write_latency) / 2,
+            data_integrity_score: if contract.performance.integrity_checks.is_empty() { 1.0 } else {
+                contract.performance.integrity_checks.iter()
+                    .map(|check| if check.success { 1.0 } else { 0.0 })
+                    .sum::<f64>() / contract.performance.integrity_checks.len() as f64
+            },
+            recommendations,
+            evaluation_timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs(),
+        })
+    }
+
+    /// Generate performance improvement recommendations
+    fn generate_performance_recommendations(&self, contract: &StorageContract, performance_score: f64) -> Vec<String> {
+        let mut recommendations = Vec::new();
+
+        if contract.performance.uptime < 0.99 {
+            recommendations.push("Improve uptime reliability - consider redundant systems".to_string());
+        }
+
+        if (contract.performance.avg_read_latency + contract.performance.avg_write_latency) / 2 > 1000 {
+            recommendations.push("Optimize response times - consider network optimization".to_string());
+        }
+
+        // Check data integrity based on integrity check results
+        let integrity_score = if contract.performance.integrity_checks.is_empty() { 1.0 } else {
+            contract.performance.integrity_checks.iter()
+                .map(|check| if check.success { 1.0 } else { 0.0 })
+                .sum::<f64>() / contract.performance.integrity_checks.len() as f64
+        };
+        
+        if integrity_score < 0.999 {
+            recommendations.push("Enhance data integrity measures - implement additional checksums".to_string());
+        }
+
+        if performance_score < 0.8 {
+            recommendations.push("Overall performance below target - comprehensive review needed".to_string());
+        }
+
+        let sla_compliance = 1.0 - (contract.performance.sla_violations.len() as f64 / 10.0).min(1.0);
+        if sla_compliance < 0.95 {
+            recommendations.push("SLA compliance issues detected - review service delivery processes".to_string());
+        }
+
+        if recommendations.is_empty() {
+            recommendations.push("Performance is excellent - maintain current standards".to_string());
+        }
+
+        recommendations
     }
 
     /// Update payment status for a contract
@@ -759,5 +1009,179 @@ mod tests {
 
         assert!(manager.get_contract(&contract_id).is_some());
         assert_eq!(manager.get_contract(&contract_id).unwrap().status, ContractStatus::Draft);
+    }
+
+    #[test]
+    fn test_template_management() {
+        let mut manager = ContractManager::new();
+        
+        // Create a template
+        let terms = ContractTerms {
+            storage_size: 1024 * 1024 * 1024, // 1 GB
+            duration: 86400 * 30, // 30 days
+            tier: StorageTier::Cold,
+            replication_factor: 3,
+            geographic_requirements: vec!["US".to_string()],
+            encryption_level: EncryptionLevel::Standard,
+            expected_access_pattern: AccessPattern::Rare,
+            erasure_coding: ErasureCodingParams {
+                data_shards: 4,
+                parity_shards: 2,
+                threshold: 3,
+            },
+            provider_nodes: vec!["template_provider".to_string()],
+        };
+
+        let sla = ServiceLevelAgreement {
+            min_uptime: 0.99,
+            max_read_latency: 1000,
+            max_write_latency: 2000,
+            min_throughput: 1024 * 1024,
+            data_durability: 0.999999,
+            recovery_time_objective: 3600,
+            recovery_point_objective: 60,
+            violation_penalties: HashMap::new(),
+        };
+
+        let template_id = manager.create_template(
+            "Cold Storage Template".to_string(),
+            "Standard template for cold storage contracts".to_string(),
+            terms,
+            sla,
+            vec![StorageTier::Cold, StorageTier::Archive],
+        ).unwrap();
+
+        // Test template retrieval
+        assert!(manager.get_template(&template_id).is_some());
+        assert_eq!(manager.list_templates().len(), 1);
+
+        // Test template-based contract creation
+        let payment = PaymentTerms {
+            total_amount: 1000,
+            paid_amount: 0,
+            status: PaymentStatus::Pending,
+            payment_schedule: PaymentSchedule::Upfront,
+            escrow_terms: EscrowTerms {
+                escrow_amount: 100,
+                release_conditions: vec![EscrowCondition::ContractCompletion],
+                dispute_resolution: DisputeResolution::Arbitration,
+            },
+            performance_bonuses: HashMap::new(),
+            penalty_terms: HashMap::new(),
+        };
+
+        let customizations = ContractCustomizations {
+            storage_size: Some(2 * 1024 * 1024 * 1024), // 2 GB
+            duration: Some(86400 * 60), // 60 days
+            tier: Some(StorageTier::Archive),
+            replication_factor: None,
+            geographic_requirements: None,
+            min_uptime: None,
+            max_read_latency: None,
+            max_write_latency: None,
+        };
+
+        let contract_id = manager.create_contract_from_template(
+            &template_id,
+            "client1".to_string(),
+            "provider1".to_string(),
+            payment,
+            Some(customizations),
+        ).unwrap();
+
+        // Verify the contract was created with customizations
+        let contract = manager.get_contract(&contract_id).unwrap();
+        assert_eq!(contract.terms.storage_size, 2 * 1024 * 1024 * 1024);
+        assert_eq!(contract.terms.duration, 86400 * 60);
+        assert_eq!(contract.terms.tier, StorageTier::Archive);
+    }
+
+    #[test]
+    fn test_template_tier_filtering() {
+        let mut manager = ContractManager::new();
+        
+        // Create templates with different tier support
+        let terms = ContractTerms {
+            storage_size: 1024 * 1024 * 1024,
+            duration: 86400 * 30,
+            tier: StorageTier::Hot,
+            replication_factor: 3,
+            geographic_requirements: vec!["US".to_string()],
+            encryption_level: EncryptionLevel::Standard,
+            expected_access_pattern: AccessPattern::Frequent,
+            erasure_coding: ErasureCodingParams {
+                data_shards: 4,
+                parity_shards: 2,
+                threshold: 3,
+            },
+            provider_nodes: vec!["template_provider".to_string()],
+        };
+
+        let sla = ServiceLevelAgreement {
+            min_uptime: 0.999,
+            max_read_latency: 100,
+            max_write_latency: 200,
+            min_throughput: 10 * 1024 * 1024,
+            data_durability: 0.999999,
+            recovery_time_objective: 300,
+            recovery_point_objective: 10,
+            violation_penalties: HashMap::new(),
+        };
+
+        manager.create_template(
+            "Hot Storage Template".to_string(),
+            "Template for hot storage".to_string(),
+            terms,
+            sla,
+            vec![StorageTier::Hot],
+        ).unwrap();
+
+        let cold_terms = ContractTerms {
+            storage_size: 1024 * 1024 * 1024,
+            duration: 86400 * 30,
+            tier: StorageTier::Cold,
+            replication_factor: 3,
+            geographic_requirements: vec!["US".to_string()],
+            encryption_level: EncryptionLevel::Standard,
+            expected_access_pattern: AccessPattern::Rare,
+            erasure_coding: ErasureCodingParams {
+                data_shards: 4,
+                parity_shards: 2,
+                threshold: 3,
+            },
+            provider_nodes: vec!["template_provider".to_string()],
+        };
+
+        let cold_sla = ServiceLevelAgreement {
+            min_uptime: 0.99,
+            max_read_latency: 1000,
+            max_write_latency: 2000,
+            min_throughput: 1024 * 1024,
+            data_durability: 0.999999,
+            recovery_time_objective: 3600,
+            recovery_point_objective: 60,
+            violation_penalties: HashMap::new(),
+        };
+
+        manager.create_template(
+            "Cold Storage Template".to_string(),
+            "Template for cold storage".to_string(),
+            cold_terms,
+            cold_sla,
+            vec![StorageTier::Cold, StorageTier::Archive],
+        ).unwrap();
+
+        // Test tier filtering
+        let hot_templates = manager.find_templates_by_tier(&StorageTier::Hot);
+        assert_eq!(hot_templates.len(), 1);
+        assert_eq!(hot_templates[0].name, "Hot Storage Template");
+
+        let cold_templates = manager.find_templates_by_tier(&StorageTier::Cold);
+        assert_eq!(cold_templates.len(), 1);
+        assert_eq!(cold_templates[0].name, "Cold Storage Template");
+
+        let archive_templates = manager.find_templates_by_tier(&StorageTier::Archive);
+        assert_eq!(archive_templates.len(), 1);
+        assert_eq!(archive_templates[0].name, "Cold Storage Template");
     }
 }

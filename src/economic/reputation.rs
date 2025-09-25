@@ -7,11 +7,12 @@
 //! - Reputation-based incentives and penalties
 //! - Trust metrics and verification
 
-use crate::types::*;
-use crate::economic::contracts::*;
+use crate::types::QualityViolation;
+// Note: No contracts imports needed - reputation is independent
 use anyhow::{Result, anyhow};
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use chrono::Utc;
 
 /// Reputation manager for tracking provider trustworthiness
 #[derive(Debug)]
@@ -398,23 +399,35 @@ impl ReputationManager {
         let honesty = self.calculate_honesty_score(&recent_records);
         let responsiveness = self.calculate_responsiveness_score(&recent_records);
         let longevity = self.calculate_longevity_score(provider_id);
+        
+        // Calculate confidence based on data points
+        let confidence = self.calculate_confidence(history.len() as u32);
 
-        // Calculate weighted overall score
-        let weights = &self.config.metric_weights;
-        let overall_score = 
-            reliability * weights.reliability +
-            performance * weights.performance +
-            security * weights.security +
-            honesty * weights.honesty +
-            responsiveness * weights.responsiveness +
-            longevity * weights.longevity;
+        // Create temporary score for calculation
+        let temp_score = ReputationScore {
+            provider_id: provider_id.to_string(),
+            metric_scores: ReputationMetrics {
+                reliability,
+                performance,
+                security,
+                honesty,
+                responsiveness,
+                longevity,
+            },
+            confidence,
+            overall_score: 0.0, // Will be calculated
+            trend: ReputationTrend::Stable,
+            last_updated: Utc::now().timestamp() as u64,
+            contracts_completed: 0, // Temp value
+            total_value_handled: 0, // Temp value
+        };
+        
+        // Calculate weighted overall score using the method
+        let overall_score = self.calculate_overall_score(&temp_score) + (longevity * self.config.metric_weights.longevity);
 
         // Apply peer attestation influence
         let peer_influence = self.calculate_peer_influence(provider_id);
         let adjusted_score = (overall_score + peer_influence) / 2.0;
-
-        // Calculate confidence based on data points
-        let confidence = self.calculate_confidence(history.len() as u32);
 
         // Determine trend
         let trend = self.calculate_trend(provider_id);
@@ -701,19 +714,14 @@ impl ReputationManager {
                 _ => score.overall_score = (score.overall_score - penalty * 0.5).max(0.0),
             }
             
-            // Recalculate overall score
-            let overall_score = {
-                let metrics = &score.metric_scores;
-                // Weighted average of different metrics
-                let weighted_score = (metrics.reliability * 0.3) +
-                                   (metrics.performance * 0.25) +
-                                   (metrics.security * 0.2) +
-                                   (metrics.honesty * 0.15) +
-                                   (metrics.responsiveness * 0.1);
-                
-                // Apply confidence factor
-                weighted_score * score.confidence
-            };
+            // Recalculate overall score using the method (calculate directly to avoid borrowing issues)
+            let metrics = &score.metric_scores;
+            let weighted_score = (metrics.reliability * 0.3) +
+                               (metrics.performance * 0.25) +
+                               (metrics.security * 0.2) +
+                               (metrics.honesty * 0.15) +
+                               (metrics.responsiveness * 0.1);
+            let overall_score = weighted_score * score.confidence;
             score.overall_score = overall_score;
             
             // Update trend
