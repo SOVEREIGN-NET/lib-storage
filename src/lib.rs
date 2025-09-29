@@ -322,7 +322,6 @@ impl UnifiedStorageSystem {
                 public_key: lib_crypto::PublicKey {
                     dilithium_pk: vec![],
                     kyber_pk: vec![],
-                    ed25519_pk: vec![],
                     key_id: [0u8; 32],
                 },
                 timestamp: 0,

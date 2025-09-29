@@ -82,7 +82,6 @@ impl DhtNodeManager {
                 public_key: lib_crypto::PublicKey {
                     dilithium_pk: vec![],
                     kyber_pk: vec![],
-                    ed25519_pk: vec![],
                     key_id: [0u8; 32],
                 },
                 timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
@@ -307,7 +306,6 @@ mod tests {
                 public_key: lib_crypto::PublicKey {
                     dilithium_pk: vec![],
                     kyber_pk: vec![],
-                    ed25519_pk: vec![],
                     key_id: [0u8; 32],
                 },
                 timestamp: 0,
