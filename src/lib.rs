@@ -5,11 +5,11 @@
 //! while the storage layer adds economics, contracts, erasure coding, and tiered storage on top.
 //!
 //! Phase Implementation Status:
-//! - Phase A: Types and module structure ✅ COMPLETED
-//! - Phase B: DHT foundation layer ✅ COMPLETED  
-//! - Phase C: Economic storage layer ✅ COMPLETED
-//! - Phase D: Content management layer ✅ COMPLETED
-//! - Phase E: Integration layer ✅ COMPLETED
+//! - Phase A: Types and module structure COMPLETED
+//! - Phase B: DHT foundation layer COMPLETED  
+//! - Phase C: Economic storage layer COMPLETED
+//! - Phase D: Content management layer COMPLETED
+//! - Phase E: Integration layer COMPLETED
 
 // Core type definitions (Phase A - COMPLETED)
 pub mod types;
@@ -438,7 +438,7 @@ impl Default for UnifiedStorageConfig {
     fn default() -> Self {
         Self {
             node_id: Hash::from_bytes(&rand::random::<[u8; 32]>()),
-            addresses: vec!["127.0.0.1:33445".to_string()],
+            addresses: vec!["0.0.0.0:33445".to_string()], // Bind to all interfaces for network access
             economic_config: EconomicManagerConfig::default(),
             storage_config: StorageConfig {
                 max_storage_size: 100_000_000_000, // 100GB

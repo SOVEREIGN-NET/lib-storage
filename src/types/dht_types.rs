@@ -8,6 +8,159 @@ use lib_crypto::PostQuantumSignature;
 use lib_proofs::{ZeroKnowledgeProof, ZkProof};
 use serde::{Deserialize, Serialize};
 use std::time::SystemTime;
+use std::collections::HashMap;
+
+/// Smart contract data for DHT operations
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractDhtData {
+    /// Contract address/identifier
+    pub contract_id: String,
+    /// Contract operation type
+    pub operation: ContractOperation,
+    /// Contract bytecode (for deployment)
+    pub bytecode: Option<Vec<u8>>,
+    /// Function name to call
+    pub function_name: Option<String>,
+    /// Function arguments (serialized)
+    pub arguments: Option<Vec<u8>>,
+    /// Gas limit for execution
+    pub gas_limit: Option<u64>,
+    /// Execution result (for responses)
+    pub result: Option<ContractResult>,
+    /// Contract metadata
+    pub metadata: Option<ContractMetadata>,
+    /// Zero-knowledge proofs for privacy
+    pub zk_proofs: Vec<ZeroKnowledgeProof>,
+}
+
+/// Smart contract operations
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum ContractOperation {
+    /// Deploy a new contract
+    Deploy,
+    /// Query contract state (read-only)
+    Query,
+    /// Execute contract function (state-changing)
+    Execute,
+    /// Find contract by ID or metadata
+    Find,
+    /// Get contract metadata
+    GetInfo,
+}
+
+/// Contract execution result
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractResult {
+    /// Whether execution was successful
+    pub success: bool,
+    /// Return value (serialized)
+    pub return_value: Option<Vec<u8>>,
+    /// Gas used
+    pub gas_used: u64,
+    /// Error message (if any)
+    pub error: Option<String>,
+    /// Contract logs/events
+    pub logs: Vec<ContractLog>,
+    /// New contract state hash
+    pub state_hash: Option<String>,
+}
+
+/// Contract log entry
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractLog {
+    /// Log level
+    pub level: LogLevel,
+    /// Log message
+    pub message: String,
+    /// Additional data
+    pub data: HashMap<String, String>,
+    /// Timestamp
+    pub timestamp: u64,
+}
+
+/// Log levels
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum LogLevel {
+    Info,
+    Warning,
+    Error,
+    Debug,
+}
+
+/// Contract metadata
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractMetadata {
+    /// Contract name
+    pub name: String,
+    /// Contract version
+    pub version: String,
+    /// Contract author
+    pub author: Option<String>,
+    /// Contract description
+    pub description: Option<String>,
+    /// ABI (Application Binary Interface)
+    pub abi: Option<Vec<u8>>,
+    /// Source code hash
+    pub source_hash: Option<String>,
+    /// Deployment timestamp
+    pub deployed_at: u64,
+    /// Contract owner
+    pub owner: Option<NodeId>,
+    /// Contract permissions
+    pub permissions: ContractPermissions,
+    /// Contract tags for discovery
+    pub tags: Vec<String>,
+}
+
+/// Contract permissions
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractPermissions {
+    /// Who can execute functions
+    pub execute_policy: ExecutePolicy,
+    /// Who can query state
+    pub query_policy: QueryPolicy,
+    /// Who can upgrade contract
+    pub upgrade_policy: UpgradePolicy,
+}
+
+/// Execute permission policy
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ExecutePolicy {
+    /// Anyone can execute
+    Public,
+    /// Only owner can execute
+    OwnerOnly,
+    /// Specific nodes can execute
+    Whitelist(Vec<NodeId>),
+    /// Requires specific proofs
+    ProofRequired(Vec<String>),
+}
+
+/// Query permission policy
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum QueryPolicy {
+    /// Anyone can query
+    Public,
+    /// Only owner can query
+    OwnerOnly,
+    /// Specific nodes can query
+    Whitelist(Vec<NodeId>),
+    /// Requires payment
+    PayPerQuery(u64),
+}
+
+/// Upgrade permission policy
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum UpgradePolicy {
+    /// Contract is immutable
+    Immutable,
+    /// Only owner can upgrade
+    OwnerOnly,
+    /// Requires governance vote
+    Governance,
+    /// Never upgradeable
+    Locked,
+}
 
 /// Storage tier levels for storage capabilities
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -109,6 +262,22 @@ pub enum DhtMessageType {
     FindValue,
     /// Value found response
     FindValueResponse,
+    /// Deploy smart contract
+    ContractDeploy,
+    /// Contract deployment response
+    ContractDeployResponse,
+    /// Query smart contract
+    ContractQuery,
+    /// Contract query response
+    ContractQueryResponse,
+    /// Execute smart contract function
+    ContractExecute,
+    /// Contract execution response
+    ContractExecuteResponse,
+    /// Find smart contract
+    ContractFind,
+    /// Contract find response
+    ContractFindResponse,
 }
 
 /// DHT message structure
@@ -128,6 +297,8 @@ pub struct DhtMessage {
     pub value: Option<Vec<u8>>,
     /// Node list for responses (optional)
     pub nodes: Option<Vec<DhtNode>>,
+    /// Smart contract data (optional)
+    pub contract_data: Option<ContractDhtData>,
     /// Message timestamp
     pub timestamp: u64,
     /// Digital signature (optional)

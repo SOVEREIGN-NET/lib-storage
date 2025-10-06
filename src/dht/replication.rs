@@ -110,6 +110,7 @@ impl DhtReplication {
             key: Some(key.to_string()),
             value: Some(value.to_vec()),
             nodes: None, // Not needed for store operation
+            contract_data: None,
             timestamp: std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap()
@@ -120,13 +121,13 @@ impl DhtReplication {
         // Send replication message to target node
         // In a real implementation, this would use the network layer
         // For now, we'll log the replication attempt and simulate success
-        println!("🔄 Replicating key '{}' ({} bytes) to node {}", 
+        println!(" Replicating key '{}' ({} bytes) to node {}", 
                 key, 
                 value.len(), 
                 hex::encode(&target_node.id.as_bytes()[..4]));
 
         // Log successful replication (metrics would be handled by a separate metrics system)
-        println!("✅ Replication message created for key '{}'", key);
+        println!("Replication message created for key '{}'", key);
         
         // Simulate realistic network delay based on data size
         let delay_ms = (value.len() / 1024).max(10).min(1000); // 10ms to 1s based on size

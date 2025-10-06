@@ -115,6 +115,7 @@ impl DhtNetwork {
             key: None,
             value: None,
             nodes: None,
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None, // In practice, this would be signed
         };
@@ -145,6 +146,7 @@ impl DhtNetwork {
             key: None,
             value: None,
             nodes: None,
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
         };
@@ -175,6 +177,7 @@ impl DhtNetwork {
             key: Some(key.clone()),
             value: None,
             nodes: None,
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
         };
@@ -209,6 +212,7 @@ impl DhtNetwork {
             key: Some(key),
             value: Some(value),
             nodes: None,
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
         };
@@ -241,6 +245,7 @@ impl DhtNetwork {
                     key: None,
                     value: None,
                     nodes: None,
+                    contract_data: None,
                     timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
                     signature: None,
                 }))
@@ -257,6 +262,7 @@ impl DhtNetwork {
                     key: None,
                     value: None,
                     nodes: Some(Vec::new()),
+                    contract_data: None,
                     timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
                     signature: None,
                 }))
@@ -273,6 +279,7 @@ impl DhtNetwork {
                     key: message.key,
                     value: None,
                     nodes: Some(Vec::new()),
+                    contract_data: None,
                     timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
                     signature: None,
                 }))
@@ -288,6 +295,7 @@ impl DhtNetwork {
                     key: None,
                     value: None,
                     nodes: None,
+                    contract_data: None,
                     timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
                     signature: None,
                 }))

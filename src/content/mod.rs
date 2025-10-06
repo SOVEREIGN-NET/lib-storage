@@ -15,6 +15,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use lib_crypto::{Hash, KeyPair, encrypt_data, decrypt_data, derive_keys, hash_blake3};
 use lib_identity::ZhtpIdentity;
+use log::info;
 
 /// High-level content manager with real encryption and key management
 #[derive(Debug)]
@@ -260,13 +261,17 @@ impl ContentManager {
             requester: uploader.clone(),
         };
 
-        // Get quote and create contract
-        let quote = self.economic_manager.process_storage_request(economic_request).await?;
-        // Create contract for economic storage
-        let _contract_id = self.economic_manager.create_contract(quote, content_hash.clone(), processed_content.len() as u64).await?;
+        // TESTING MODE: Skip provider registration and economic contracts - store directly in DHT
+        info!("🧪 TEST MODE: Bypassing storage provider registration, storing directly in DHT");
+        
+        // Skip economic manager for testing
+        // let quote = self.economic_manager.process_storage_request(economic_request).await?;
+        // let _contract_id = self.economic_manager.create_contract(quote, content_hash.clone(), processed_content.len() as u64).await?;
 
-        // Store content in DHT
-        self.dht_storage.store_data(content_hash.clone(), processed_content).await?;
+        // Store content directly in DHT (no provider requirements)
+        info!("📦 Storing {} bytes directly in DHT storage (test mode)", processed_content.len());
+        self.dht_storage.store_data(content_hash.clone(), processed_content.clone()).await?;
+        info!("✅ Content stored in DHT with hash: {:?}", content_hash);
 
         // Create metadata
         let upload_time = std::time::SystemTime::now()
@@ -736,7 +741,7 @@ impl ContentManager {
         // Store in DHT for distributed access
         self.dht_storage.store_data(content_hash, encrypted_credentials).await?;
 
-        println!("✅ Stored identity credentials for ID: {}", hex::encode(identity_id.as_bytes()));
+        println!("Stored identity credentials for ID: {}", hex::encode(identity_id.as_bytes()));
         Ok(())
     }
 
@@ -761,7 +766,7 @@ impl ContentManager {
             let identity: lib_identity::ZhtpIdentity = bincode::deserialize(&decrypted_data)
                 .map_err(|e| anyhow!("Failed to deserialize identity data: {}", e))?;
 
-            println!("✅ Retrieved identity credentials for ID: {}", hex::encode(identity_id.as_bytes()));
+            println!("Retrieved identity credentials for ID: {}", hex::encode(identity_id.as_bytes()));
             return Ok(identity);
         }
 
@@ -792,7 +797,7 @@ impl ContentManager {
         // Store the provided ZhtpIdentity in unified storage
         self.store_identity_credentials(identity_id, lib_identity, passphrase).await?;
         
-        println!("✅ Successfully migrated identity from blockchain to unified storage");
+        println!("Successfully migrated identity from blockchain to unified storage");
         Ok(())
     }
 

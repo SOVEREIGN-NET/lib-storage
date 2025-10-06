@@ -162,6 +162,7 @@ impl DhtMessaging {
             key: None,
             value: None,
             nodes: None,
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
         })
@@ -178,6 +179,7 @@ impl DhtMessaging {
             target_id: Some(find_node.sender_id.clone()),
             key: None,
             value: None,
+            contract_data: None,
             nodes: Some(Vec::new()),
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
@@ -195,6 +197,7 @@ impl DhtMessaging {
             key: find_value.key.clone(),
             value: None, // Value not found locally
             nodes: Some(Vec::new()), // Return empty node list
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
         })
@@ -210,6 +213,7 @@ impl DhtMessaging {
             key: None,
             value: None,
             nodes: None,
+            contract_data: None,
             timestamp: SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
             signature: None,
         })

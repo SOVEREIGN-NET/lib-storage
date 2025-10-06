@@ -561,7 +561,7 @@ impl IncentiveSystem {
                 distribution.total_distributed += distributed;
                 
                 // Log pool-specific distribution
-                println!("💰 Distributed {} tokens from {:?} pool (remaining: {})", 
+                println!("Distributed {} tokens from {:?} pool (remaining: {})", 
                         distributed, pool_type, pool.remaining_amount);
                 
                 // Distribute proportionally to eligible participants
