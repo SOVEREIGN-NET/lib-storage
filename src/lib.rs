@@ -438,7 +438,7 @@ impl Default for UnifiedStorageConfig {
     fn default() -> Self {
         Self {
             node_id: Hash::from_bytes(&rand::random::<[u8; 32]>()),
-            addresses: vec!["0.0.0.0:33445".to_string()], // Bind to all interfaces for network access
+            addresses: vec!["127.0.0.1:33445".to_string()], // Bind to localhost only for local mesh operation
             economic_config: EconomicManagerConfig::default(),
             storage_config: StorageConfig {
                 max_storage_size: 100_000_000_000, // 100GB
