@@ -5,6 +5,10 @@ edition = "2021"
 description = "ZHTP Unified Storage System - DHT + Economic Storage Layer"
 license = "MIT"
 
+[lib]
+name = "lib_storage"
+path = "src/lib.rs"
+
 [dependencies]
 # ZHTP Package Dependencies
 lib-crypto = { path = "../lib-crypto" }
