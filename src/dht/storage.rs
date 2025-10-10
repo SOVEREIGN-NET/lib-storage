@@ -1090,7 +1090,7 @@ impl DhtStorage {
                             let _ = self.store(summary_key, summary_serialized, None).await;
                         }
                     }
-                    Err(e) => println!("❌ Contract deployment failed: {}", e),
+                    Err(e) => println!(" Contract deployment failed: {}", e),
                 }
             }
         }
@@ -1127,23 +1127,23 @@ impl DhtStorage {
                 // to execute read-only contract queries
             }
             Ok(None) => {
-                println!("❌ Contract {} not found", contract_data.contract_id);
+                println!(" Contract {} not found", contract_data.contract_id);
             }
             Err(e) => {
-                println!("❌ Error querying contract {}: {}", contract_data.contract_id, e);
+                println!(" Error querying contract {}: {}", contract_data.contract_id, e);
             }
         }
     }
 
     /// Handle smart contract execution through DHT
     async fn handle_contract_execute(&mut self, contract_data: &crate::types::dht_types::ContractDhtData, sender_id: &NodeId) {
-        println!("⚡ Contract execution request from {}", hex::encode(&sender_id.as_bytes()[..4]));
+        println!(" Contract execution request from {}", hex::encode(&sender_id.as_bytes()[..4]));
         
         let contract_key = format!("contract:{}", contract_data.contract_id);
         
         match self.get(&contract_key).await {
             Ok(Some(_contract_data)) => {
-                println!("🔥 Executing contract {} function {:?}", 
+                println!(" Executing contract {} function {:?}", 
                         contract_data.contract_id, 
                         contract_data.function_name.as_deref().unwrap_or("default"));
                 // In a full implementation, this would:
@@ -1153,10 +1153,10 @@ impl DhtStorage {
                 // 4. Return execution result through DHT response
             }
             Ok(None) => {
-                println!("❌ Contract {} not found for execution", contract_data.contract_id);
+                println!(" Contract {} not found for execution", contract_data.contract_id);
             }
             Err(e) => {
-                println!("❌ Error executing contract {}: {}", contract_data.contract_id, e);
+                println!(" Error executing contract {}: {}", contract_data.contract_id, e);
             }
         }
     }
@@ -1177,10 +1177,10 @@ impl DhtStorage {
                     // Return contract metadata through DHT response
                 }
                 Ok(None) => {
-                    println!("❌ Contract {} not found in DHT", contract_data.contract_id);
+                    println!(" Contract {} not found in DHT", contract_data.contract_id);
                 }
                 Err(e) => {
-                    println!("❌ Error searching for contract {}: {}", contract_data.contract_id, e);
+                    println!(" Error searching for contract {}: {}", contract_data.contract_id, e);
                 }
             }
         } else if let Some(metadata) = &contract_data.metadata {
@@ -1200,7 +1200,7 @@ impl DhtStorage {
                     }
                 }
                 Err(e) => {
-                    println!("❌ Error searching contracts by tags: {}", e);
+                    println!(" Error searching contracts by tags: {}", e);
                 }
             }
         } else {
