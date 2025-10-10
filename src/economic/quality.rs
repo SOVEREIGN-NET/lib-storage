@@ -590,13 +590,13 @@ impl QualityAssurance {
             monitor.active_tests.push(test);
         }
 
-        // In a real implementation, this would trigger actual test execution
+        // In a implementation, this would trigger actual test execution
         self.simulate_test_execution(&test_id, test_type)?;
 
         Ok(test_id)
     }
 
-    /// Execute quality test with real implementation
+    /// Execute quality test with implementation
     fn simulate_test_execution(&self, test_id: &str, test_type: QualityTestType) -> Result<()> {
         match test_type {
             QualityTestType::AvailabilityTest => {

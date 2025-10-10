@@ -252,7 +252,7 @@ impl DhtNetwork {
             }
             
             DhtMessageType::FindNode => {
-                // In a real implementation, this would query the routing table
+                // In a implementation, this would query the routing table
                 // For now, return empty node list
                 Ok(Some(DhtMessage {
                     message_id: generate_message_id(),
@@ -269,7 +269,7 @@ impl DhtNetwork {
             }
             
             DhtMessageType::FindValue => {
-                // In a real implementation, this would check local storage
+                // In a implementation, this would check local storage
                 // For now, return empty node list (value not found)
                 Ok(Some(DhtMessage {
                     message_id: generate_message_id(),
@@ -286,7 +286,7 @@ impl DhtNetwork {
             }
             
             DhtMessageType::Store => {
-                // In a real implementation, this would store the key-value pair
+                // In a implementation, this would store the key-value pair
                 Ok(Some(DhtMessage {
                     message_id: generate_message_id(),
                     message_type: DhtMessageType::StoreResponse,

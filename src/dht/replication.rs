@@ -119,7 +119,7 @@ impl DhtReplication {
         };
 
         // Send replication message to target node
-        // In a real implementation, this would use the network layer
+        // In a implementation, this would use the network layer
         // For now, we'll log the replication attempt and simulate success
         println!(" Replicating key '{}' ({} bytes) to node {}", 
                 key, 
@@ -219,7 +219,7 @@ impl DhtReplication {
     
     /// Retrieve data for repair (simulation)
     async fn retrieve_data_for_repair(&self, key: &str) -> Result<Vec<u8>> {
-        // In a real implementation, this would:
+        // In a implementation, this would:
         // 1. Check local storage first
         // 2. Query existing replicas if not found locally
         // 3. Reconstruct from erasure codes if available

@@ -2,7 +2,7 @@
 //! 
 //! High-level content management with access control, versioning, and search capabilities.
 //! Integrates with DHT storage and economic manager for contract creation.
-//! Enhanced with real encryption and key management using lib-crypto.
+//! Enhanced with encryption and key management using lib-crypto.
 
 use crate::types::*;
 use crate::types::economic_types::{EconomicManagerConfig, PaymentSchedule, DisputeResolution,
@@ -17,7 +17,7 @@ use lib_crypto::{Hash, KeyPair, encrypt_data, decrypt_data, derive_keys, hash_bl
 use lib_identity::ZhtpIdentity;
 use log::info;
 
-/// High-level content manager with real encryption and key management
+/// High-level content manager with encryption and key management
 #[derive(Debug)]
 pub struct ContentManager {
     /// DHT storage backend
@@ -262,14 +262,14 @@ impl ContentManager {
         };
 
         // TESTING MODE: Skip provider registration and economic contracts - store directly in DHT
-        info!("🧪 TEST MODE: Bypassing storage provider registration, storing directly in DHT");
+        info!(" TEST MODE: Bypassing storage provider registration, storing directly in DHT");
         
         // Skip economic manager for testing
         // let quote = self.economic_manager.process_storage_request(economic_request).await?;
         // let _contract_id = self.economic_manager.create_contract(quote, content_hash.clone(), processed_content.len() as u64).await?;
 
         // Store content directly in DHT (no provider requirements)
-        info!("📦 Storing {} bytes directly in DHT storage (test mode)", processed_content.len());
+        info!(" Storing {} bytes directly in DHT storage (test mode)", processed_content.len());
         self.dht_storage.store_data(content_hash.clone(), processed_content.clone()).await?;
         info!(" Content stored in DHT with hash: {:?}", content_hash);
 
@@ -570,7 +570,7 @@ impl ContentManager {
         }
     }
 
-    /// Process content for upload with real encryption
+    /// Process content for upload with encryption
     async fn process_content_for_upload(&mut self, request: &UploadRequest) -> Result<Vec<u8>> {
         let mut content = request.content.clone();
 
@@ -586,7 +586,7 @@ impl ContentManager {
             // Get or create encryption key for this content
             let encryption_key = self.get_or_create_content_key(&content_hash)?;
             
-            // Encrypt using real ChaCha20-Poly1305
+            // Encrypt using ChaCha20-Poly1305
             content = encrypt_data(&content, &encryption_key)
                 .map_err(|e| anyhow!("Content encryption failed: {}", e))?;
         }
@@ -594,7 +594,7 @@ impl ContentManager {
         Ok(content)
     }
 
-    /// Process content for download with real decryption
+    /// Process content for download with decryption
     async fn process_content_for_download(&mut self, content_hash: &ContentHash, content: Vec<u8>) -> Result<Vec<u8>> {
         let mut processed = content;
 
@@ -631,12 +631,12 @@ impl ContentManager {
         Ok(decompressed)
     }
 
-    /// Decrypt content using real ChaCha20-Poly1305 decryption
+    /// Decrypt content using ChaCha20-Poly1305 decryption
     async fn decrypt_content(&mut self, content: &[u8], content_hash: &ContentHash) -> Result<Vec<u8>> {
         // Get content-specific encryption key
         let encryption_key = self.get_or_create_content_key(content_hash)?;
         
-        // Decrypt using real ChaCha20-Poly1305
+        // Decrypt using ChaCha20-Poly1305
         decrypt_data(content, &encryption_key)
             .map_err(|e| anyhow!("Content decryption failed: {}", e))
     }

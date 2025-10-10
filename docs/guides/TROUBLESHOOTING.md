@@ -284,7 +284,7 @@ async fn check_wallet_status(storage: &mut UnifiedStorageSystem, identity: &Zhtp
 
 1. **Top Up Wallet:**
 ```rust
-// In a real implementation, integrate with ZHTP token system
+// In a implementation, integrate with ZHTP token system
 async fn fund_wallet(storage: &mut UnifiedStorageSystem, identity: &ZhtpIdentity, amount: u64) -> Result<()> {
     // This would connect to the ZHTP blockchain/token system
     let funding_tx = storage.fund_wallet(identity.clone(), amount).await?;
@@ -795,7 +795,7 @@ When reporting issues, please include:
 
 This guide helps diagnose and resolve common issues when working with the ZHTP Unified Storage System.
 
-## 🚨 Common Issues and Solutions
+##  Common Issues and Solutions
 
 ### Network Connection Issues
 
@@ -1076,7 +1076,7 @@ async fn check_wallet_status(storage: &mut UnifiedStorageSystem, identity: &Zhtp
 
 1. **Top Up Wallet:**
 ```rust
-// In a real implementation, integrate with ZHTP token system
+// In a implementation, integrate with ZHTP token system
 async fn fund_wallet(storage: &mut UnifiedStorageSystem, identity: &ZhtpIdentity, amount: u64) -> Result<()> {
     // This would connect to the ZHTP blockchain/token system
     let funding_tx = storage.fund_wallet(identity.clone(), amount).await?;

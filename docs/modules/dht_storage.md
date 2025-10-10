@@ -3,7 +3,7 @@
 
 The DHT Storage module implements the core key-value storage operations with cryptographic integrity, zero-knowledge privacy, and smart contract support. It provides the foundation for all storage operations in the ZHTP network.
 
-## 📋 Overview
+##  Overview
 
 The `DhtStorage` system provides:
 - **Cryptographic Storage**: All data secured with BLAKE3 hashing and zero-knowledge proofs
@@ -339,7 +339,7 @@ Start continuous network message processing loop.
 - **Find Node**: Provide routing information
 - **Contract Messages**: Deploy, query, and execute smart contracts
 
-## 📊 Storage Management
+##  Storage Management
 
 ### Capacity Management
 
@@ -429,7 +429,7 @@ fn calculate_checksum(&self, data: &[u8]) -> Vec<u8> {
 }
 ```
 
-## 🧪 Testing and Development
+##  Testing and Development
 
 ### Unit Tests
 ```rust
@@ -455,7 +455,7 @@ async fn test_store_and_retrieve() {
 - **Smart Contract Deployment**: Test contract storage and execution
 - **Zero-Knowledge Operations**: Test ZK proof verification
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Storage Operations
 ```rust
@@ -502,7 +502,7 @@ match storage.store_data(hash, data.clone()).await {
 
 The DHT Storage module implements the core key-value storage operations with cryptographic integrity, zero-knowledge privacy, and smart contract support. It provides the foundation for all storage operations in the ZHTP network.
 
-## 📋 Overview
+##  Overview
 
 The `DhtStorage` system provides:
 - **Cryptographic Storage**: All data secured with BLAKE3 hashing and zero-knowledge proofs
@@ -838,7 +838,7 @@ Start continuous network message processing loop.
 - **Find Node**: Provide routing information
 - **Contract Messages**: Deploy, query, and execute smart contracts
 
-## 📊 Storage Management
+##  Storage Management
 
 ### Capacity Management
 
@@ -928,7 +928,7 @@ fn calculate_checksum(&self, data: &[u8]) -> Vec<u8> {
 }
 ```
 
-## 🧪 Testing and Development
+##  Testing and Development
 
 ### Unit Tests
 ```rust
@@ -954,7 +954,7 @@ async fn test_store_and_retrieve() {
 - **Smart Contract Deployment**: Test contract storage and execution
 - **Zero-Knowledge Operations**: Test ZK proof verification
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Storage Operations
 ```rust

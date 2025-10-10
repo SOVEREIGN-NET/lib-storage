@@ -5,7 +5,7 @@
 
 The ZHTP Unified Storage System implements a sophisticated multi-layer architecture that combines distributed systems, cryptography, economics, and identity management. The system is designed with five distinct phases, each building upon the previous layers.
 
-## 📊 Architecture Diagram
+##  Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -46,7 +46,7 @@ Content Retrieval → Integrity Verification → Decryption → Content Delivery
 Usage Tracking → Performance Metrics → Reputation Updates
 ```
 
-## 🏛️ Phase-by-Phase Architecture
+##  Phase-by-Phase Architecture
 
 ### Phase A: Core Types System
 **Location**: `src/types/`
@@ -104,7 +104,7 @@ pub struct DhtStorage {
 - Kademlia routing with XOR distance metric
 - Zero-knowledge proof verification for all operations
 - Smart contract storage and execution capability
-- Real UDP networking with async message handling
+- UDP networking with async message handling
 - Cryptographic integrity using BLAKE3 hashing
 
 ### Phase C: Economic Storage Layer
@@ -224,7 +224,7 @@ Node G ←→ Node H ←→ Node I
 - **FindValue**: Content retrieval requests
 - **ContractDeploy/Query/Execute**: Smart contract operations
 
-## 📈 Performance Characteristics
+##  Performance Characteristics
 
 ### Scalability
 - **Network Size**: Supports 1M+ nodes efficiently
@@ -293,7 +293,7 @@ pub struct UnifiedStorageStats {
 
 The ZHTP Unified Storage System implements a sophisticated multi-layer architecture that combines distributed systems, cryptography, economics, and identity management. The system is designed with five distinct phases, each building upon the previous layers.
 
-## 📊 Architecture Diagram
+##  Architecture Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -334,7 +334,7 @@ Content Retrieval → Integrity Verification → Decryption → Content Delivery
 Usage Tracking → Performance Metrics → Reputation Updates
 ```
 
-## 🏛️ Phase-by-Phase Architecture
+##  Phase-by-Phase Architecture
 
 ### Phase A: Core Types System
 **Location**: `src/types/`
@@ -392,7 +392,7 @@ pub struct DhtStorage {
 - Kademlia routing with XOR distance metric
 - Zero-knowledge proof verification for all operations
 - Smart contract storage and execution capability
-- Real UDP networking with async message handling
+- UDP networking with async message handling
 - Cryptographic integrity using BLAKE3 hashing
 
 ### Phase C: Economic Storage Layer
@@ -512,7 +512,7 @@ Node G ←→ Node H ←→ Node I
 - **FindValue**: Content retrieval requests
 - **ContractDeploy/Query/Execute**: Smart contract operations
 
-## 📈 Performance Characteristics
+##  Performance Characteristics
 
 ### Scalability
 - **Network Size**: Supports 1M+ nodes efficiently

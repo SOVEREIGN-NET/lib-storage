@@ -3,7 +3,7 @@
 
 This guide provides detailed strategies for optimizing the performance of the ZHTP Unified Storage System across different scenarios and deployment environments.
 
-## 📊 Performance Overview
+##  Performance Overview
 
 The ZHTP Storage System is designed for high-performance distributed storage with multiple optimization layers:
 
@@ -189,7 +189,7 @@ impl NetworkPerformanceMonitor {
 }
 ```
 
-## 💾 Storage Performance Optimization
+##  Storage Performance Optimization
 
 ### Erasure Coding Optimization
 
@@ -688,7 +688,7 @@ impl MemoryOptimizedStorage {
 }
 ```
 
-## 📈 Performance Monitoring and Tuning
+##  Performance Monitoring and Tuning
 
 ### Real-time Performance Metrics
 
@@ -986,7 +986,7 @@ let cpu_optimized_config = ProcessingConfig {
 
 This guide provides detailed strategies for optimizing the performance of the ZHTP Unified Storage System across different scenarios and deployment environments.
 
-## 📊 Performance Overview
+##  Performance Overview
 
 The ZHTP Storage System is designed for high-performance distributed storage with multiple optimization layers:
 
@@ -1172,7 +1172,7 @@ impl NetworkPerformanceMonitor {
 }
 ```
 
-## 💾 Storage Performance Optimization
+##  Storage Performance Optimization
 
 ### Erasure Coding Optimization
 
@@ -1671,7 +1671,7 @@ impl MemoryOptimizedStorage {
 }
 ```
 
-## 📈 Performance Monitoring and Tuning
+##  Performance Monitoring and Tuning
 
 ### Real-time Performance Metrics
 

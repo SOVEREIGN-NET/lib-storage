@@ -147,7 +147,7 @@ impl DhtMessaging {
     
     /// Get response correlation ID
     fn get_response_id(&self, message: &DhtMessage) -> Option<String> {
-        // In a real implementation, responses would include the original message ID
+        // In a implementation, responses would include the original message ID
         // For now, we'll use a simple correlation based on message type and sender
         Some(message.message_id.clone())
     }
@@ -170,7 +170,7 @@ impl DhtMessaging {
     
     /// Create FIND_NODE response
     fn create_find_node_response(&self, find_node: &DhtMessage) -> Result<DhtMessage> {
-        // In a real implementation, this would query the routing table
+        // In a implementation, this would query the routing table
         // For now, return empty node list
         Ok(DhtMessage {
             message_id: generate_response_id(&find_node.message_id),
@@ -188,7 +188,7 @@ impl DhtMessaging {
     
     /// Create FIND_VALUE response
     fn create_find_value_response(&self, find_value: &DhtMessage) -> Result<DhtMessage> {
-        // In a real implementation, this would check local storage
+        // In a implementation, this would check local storage
         Ok(DhtMessage {
             message_id: generate_response_id(&find_value.message_id),
             message_type: DhtMessageType::FindValueResponse,
@@ -249,7 +249,7 @@ impl DhtMessaging {
         
         // Log cleanup activity
         if self.pending_responses.len() > 100 {
-            println!("🧹 Cleaned up expired responses, {} remaining", self.pending_responses.len());
+            println!(" Cleaned up expired responses, {} remaining", self.pending_responses.len());
         }
     }
 }

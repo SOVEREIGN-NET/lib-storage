@@ -79,7 +79,7 @@ let node_manager = DhtNodeManager::new_with_network(
 ).await?;
 ```
 
-## 📊 Performance Characteristics
+##  Performance Characteristics
 
 ### Scalability Metrics
 - **Network Size**: Efficiently supports 1M+ nodes
@@ -115,7 +115,7 @@ Hash Query → Node Lookup → Content Request → Integrity Check → Content R
 3. **Integrity Verification**: Verify content hasn't been tampered with
 4. **Content Delivery**: Return verified content to requester
 
-## 🛡️ Security Features
+##  Security Features
 
 ### Zero-Knowledge Integration
 ```rust
@@ -156,7 +156,7 @@ pub struct DhtStats {
 - **Storage Utilization**: Monitor capacity usage across nodes
 - **Network Health**: Overall network connectivity metrics
 
-## 🧪 Testing and Development
+##  Testing and Development
 
 ### Test Coverage
 - **Unit Tests**: Individual component testing
@@ -165,7 +165,7 @@ pub struct DhtStats {
 - **Performance Tests**: Scalability and load testing
 
 ### Development Tools
-- **Mock Network**: Local testing without real networking
+- **Mock Network**: Local testing without networking
 - **Node Simulation**: Simulate large networks for testing
 - **Debugging Tools**: Comprehensive logging and metrics
 - **Benchmarking**: Performance measurement utilities
@@ -270,7 +270,7 @@ let node_manager = DhtNodeManager::new_with_network(
 ).await?;
 ```
 
-## 📊 Performance Characteristics
+##  Performance Characteristics
 
 ### Scalability Metrics
 - **Network Size**: Efficiently supports 1M+ nodes
@@ -306,7 +306,7 @@ Hash Query → Node Lookup → Content Request → Integrity Check → Content R
 3. **Integrity Verification**: Verify content hasn't been tampered with
 4. **Content Delivery**: Return verified content to requester
 
-## 🛡️ Security Features
+##  Security Features
 
 ### Zero-Knowledge Integration
 ```rust
@@ -347,7 +347,7 @@ pub struct DhtStats {
 - **Storage Utilization**: Monitor capacity usage across nodes
 - **Network Health**: Overall network connectivity metrics
 
-## 🧪 Testing and Development
+##  Testing and Development
 
 ### Test Coverage
 - **Unit Tests**: Individual component testing
@@ -356,7 +356,7 @@ pub struct DhtStats {
 - **Performance Tests**: Scalability and load testing
 
 ### Development Tools
-- **Mock Network**: Local testing without real networking
+- **Mock Network**: Local testing without networking
 - **Node Simulation**: Simulate large networks for testing
 - **Debugging Tools**: Comprehensive logging and metrics
 - **Benchmarking**: Performance measurement utilities

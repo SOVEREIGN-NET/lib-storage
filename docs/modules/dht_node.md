@@ -3,7 +3,7 @@
 
 The DHT Node Management module handles the lifecycle, capabilities, and reputation of nodes in the distributed hash table network. It provides the foundation for peer discovery, network health monitoring, and quality-based node selection.
 
-## 📋 Overview
+##  Overview
 
 The `DhtNodeManager` is responsible for:
 - Managing local node information and capabilities
@@ -220,7 +220,7 @@ let trusted_nodes = manager.high_reputation_nodes(800);
 println!("Found {} highly trusted nodes", trusted_nodes.len());
 ```
 
-## 📊 Statistics and Monitoring
+##  Statistics and Monitoring
 
 ### get_statistics()
 ```rust
@@ -338,7 +338,7 @@ Query a node for other nodes it knows about.
 - **Replay Protection**: Timestamps prevent message replay attacks
 - **DoS Protection**: Rate limiting and reputation-based filtering
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Node Selection
 ```rust
@@ -379,7 +379,7 @@ if stats.network_health < 0.8 {
 }
 ```
 
-## 🧪 Testing
+##  Testing
 
 ### Unit Tests
 ```rust
@@ -413,7 +413,7 @@ async fn test_node_management() {
 
 The DHT Node Management module handles the lifecycle, capabilities, and reputation of nodes in the distributed hash table network. It provides the foundation for peer discovery, network health monitoring, and quality-based node selection.
 
-## 📋 Overview
+##  Overview
 
 The `DhtNodeManager` is responsible for:
 - Managing local node information and capabilities
@@ -630,7 +630,7 @@ let trusted_nodes = manager.high_reputation_nodes(800);
 println!("Found {} highly trusted nodes", trusted_nodes.len());
 ```
 
-## 📊 Statistics and Monitoring
+##  Statistics and Monitoring
 
 ### get_statistics()
 ```rust
@@ -748,7 +748,7 @@ Query a node for other nodes it knows about.
 - **Replay Protection**: Timestamps prevent message replay attacks
 - **DoS Protection**: Rate limiting and reputation-based filtering
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Node Selection
 ```rust
@@ -789,7 +789,7 @@ if stats.network_health < 0.8 {
 }
 ```
 
-## 🧪 Testing
+##  Testing
 
 ### Unit Tests
 ```rust

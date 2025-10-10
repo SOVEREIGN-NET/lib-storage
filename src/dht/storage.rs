@@ -15,7 +15,7 @@ use std::net::SocketAddr;
 use lib_crypto::Hash;
 use lib_proofs::{ZkProof, ZeroKnowledgeProof};
 
-/// DHT storage manager with real networking
+/// DHT storage manager with networking
 #[derive(Debug)]
 pub struct DhtStorage {
     /// Local storage for key-value pairs
@@ -282,7 +282,7 @@ impl DhtStorage {
             crate::types::dht_types::AccessLevel::Restricted => 2u64,
         };
         
-        // Generate real cryptographic access key from node identity and request context
+        // Generate cryptographic access key from node identity and request context
         let node_key_material = self.local_node_id.as_bytes();
         let access_key = blake3::hash(&[node_key_material, value_hash.as_bytes()].concat());
         let access_key_u64 = u64::from_be_bytes([
@@ -320,7 +320,7 @@ impl DhtStorage {
             crate::types::dht_types::AccessLevel::Restricted => 2u64,
         };
         
-        // Generate expected proof with real cryptographic parameters
+        // Generate expected proof with cryptographic parameters
         let expected_proof = zk_system.prove_storage_access(
             access_key_u64,
             requester_secret,
@@ -561,9 +561,9 @@ impl DhtStorage {
         }
     }
     
-    /// Verify zero-knowledge storage proof with real cryptographic validation
+    /// Verify zero-knowledge storage proof with cryptographic validation
     async fn verify_storage_proof(&self, proof: &ZkProof, key: &str, value: &[u8]) -> Result<bool> {
-        // Initialize ZK system for real proof verification
+        // Initialize ZK system for proof verification
         let zk_system = lib_proofs::initialize_zk_system()
             .map_err(|e| anyhow!("Failed to initialize ZK system: {}", e))?;
         
@@ -574,7 +574,7 @@ impl DhtStorage {
         // Generate cryptographically secure commitment to the storage operation
         let storage_commitment = self.generate_storage_commitment(key, value)?;
         
-        // Create public inputs using real cryptographic operations
+        // Create public inputs using cryptographic operations
         let data_hash = blake3::hash(value);
         let key_hash = blake3::hash(key.as_bytes());
         let node_commitment = blake3::hash(&[
@@ -738,7 +738,7 @@ impl DhtStorage {
 
     /// Determine if storage operation requires ZK proof
     fn requires_proof_for_storage(&self, _key: &str, _value: &[u8]) -> Result<bool> {
-        // 🧪 TEST MODE: Disable ZK proof requirement for testing
+        //  TEST MODE: Disable ZK proof requirement for testing
         // This allows us to test DHT storage without setting up ZK proofs
         Ok(false)
         
@@ -850,7 +850,7 @@ impl DhtStorage {
             "plonky2" => {
                 // Validate Plonky2 proof if present
                 if let Some(ref plonky2_proof) = proof.plonky2_proof {
-                    // In a real implementation, this would verify the Plonky2 proof
+                    // In a implementation, this would verify the Plonky2 proof
                     return Ok(!plonky2_proof.proof.is_empty());
                 }
             }
@@ -921,7 +921,7 @@ impl DhtStorage {
             if let Some(queued_msg) = self.messaging.get_next_message() {
                 match network.send_message(&queued_msg.target_node, queued_msg.message.clone()).await {
                     Ok(_) => {
-                        println!("📤 Sent message {} to {}", 
+                        println!(" Sent message {} to {}", 
                                 queued_msg.message.message_id, 
                                 hex::encode(&queued_msg.target_node.id.as_bytes()[..4]));
                     }
@@ -991,7 +991,7 @@ impl DhtStorage {
                     // Store the data locally
                     match self.store(key.clone(), value.clone(), None).await {
                         Ok(_) => {
-                            println!("📦 Stored data for key {} from {}", 
+                            println!(" Stored data for key {} from {}", 
                                     key, hex::encode(&message.sender_id.as_bytes()[..4]));
                         }
                         Err(e) => {
@@ -1104,7 +1104,7 @@ impl DhtStorage {
         
         match self.get(&contract_key).await {
             Ok(Some(stored_contract)) => {
-                println!("📦 Found contract {} for query ({} bytes)", 
+                println!(" Found contract {} for query ({} bytes)", 
                         contract_data.contract_id, 
                         stored_contract.len());
                 
@@ -1117,7 +1117,7 @@ impl DhtStorage {
                     
                     println!("⏰ Deployed at: {}", 
                             contract_info["deployed_at"].as_u64().unwrap_or(0));
-                    println!("👤 Deployed by: {}", 
+                    println!(" Deployed by: {}", 
                             contract_info["deployer"].as_str().unwrap_or("unknown"));
                     println!("📏 Bytecode size: {} bytes", 
                             contract_info["bytecode_size"].as_u64().unwrap_or(0));
@@ -1163,7 +1163,7 @@ impl DhtStorage {
 
     /// Handle smart contract find through DHT
     async fn handle_contract_find(&mut self, contract_data: &crate::types::dht_types::ContractDhtData, sender_id: &NodeId) {
-        println!("🔎 Contract search from {}", hex::encode(&sender_id.as_bytes()[..4]));
+        println!(" Contract search from {}", hex::encode(&sender_id.as_bytes()[..4]));
         
         // If specific contract ID provided, look it up directly
         if !contract_data.contract_id.is_empty() {
@@ -1210,7 +1210,7 @@ impl DhtStorage {
             println!(" Found {} contracts in DHT storage", all_contracts.len());
             
             for contract_id in all_contracts.iter().take(10) {
-                println!("  📦 Contract: {}", contract_id);
+                println!("   Contract: {}", contract_id);
             }
         }
     }

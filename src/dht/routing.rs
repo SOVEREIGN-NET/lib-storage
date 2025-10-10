@@ -93,7 +93,7 @@ impl KademliaRouter {
                     .map(|entry| entry.node.id.clone());
                 
                 if let Some(node_id) = lrs_node_id {
-                    // In a real implementation, we would ping the node here
+                    // In a implementation, we would ping the node here
                     // For now, we'll replace if failed_attempts > 3
                     if let Some(lrs_entry) = bucket.nodes.iter().find(|e| e.node.id == node_id) {
                         if lrs_entry.failed_attempts > 3 {

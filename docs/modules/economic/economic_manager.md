@@ -3,7 +3,7 @@
 
 The Economic Storage Manager serves as the central coordination point for all economic activities in the ZHTP storage network. It orchestrates contracts, payments, reputation, quality assurance, and incentive distribution to create a self-sustaining economic ecosystem.
 
-## 📋 Overview
+##  Overview
 
 The `EconomicStorageManager` is responsible for:
 - **Request Processing**: Converting storage requests into economic quotes
@@ -214,7 +214,7 @@ for contract_id in active_contracts {
 6. **Reward Calculation**: Calculate performance-based rewards
 7. **Incentive Distribution**: Distribute rewards for good performance
 
-## 📊 Economic Calculations
+##  Economic Calculations
 
 ### Cost Breakdown Generation
 
@@ -277,7 +277,7 @@ fn calculate_penalty_amount(&self, penalty_type: &PenaltyType, contract_value: u
 }
 ```
 
-## 🎯 Default Configurations
+##  Default Configurations
 
 ### Default Penalty Clauses
 
@@ -323,7 +323,7 @@ impl Default for EconomicManagerConfig {
 }
 ```
 
-## 📈 Statistics and Analytics
+##  Statistics and Analytics
 
 ### get_statistics()
 ```rust
@@ -379,7 +379,7 @@ pub fn get_config(&self) -> &EconomicManagerConfig
 
 Get current system configuration.
 
-## 🧪 Testing and Development
+##  Testing and Development
 
 ### Unit Testing
 
@@ -412,7 +412,7 @@ async fn test_storage_request_processing() {
 - **Performance Monitoring**: Test SLA monitoring and penalty enforcement
 - **Economic Model Validation**: Test pricing, incentives, and market dynamics
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Request Processing
 ```rust
@@ -464,7 +464,7 @@ match self.process_payment(contract_id, amount).await {
 
 The Economic Storage Manager serves as the central coordination point for all economic activities in the ZHTP storage network. It orchestrates contracts, payments, reputation, quality assurance, and incentive distribution to create a self-sustaining economic ecosystem.
 
-## 📋 Overview
+##  Overview
 
 The `EconomicStorageManager` is responsible for:
 - **Request Processing**: Converting storage requests into economic quotes
@@ -675,7 +675,7 @@ for contract_id in active_contracts {
 6. **Reward Calculation**: Calculate performance-based rewards
 7. **Incentive Distribution**: Distribute rewards for good performance
 
-## 📊 Economic Calculations
+##  Economic Calculations
 
 ### Cost Breakdown Generation
 
@@ -738,7 +738,7 @@ fn calculate_penalty_amount(&self, penalty_type: &PenaltyType, contract_value: u
 }
 ```
 
-## 🎯 Default Configurations
+##  Default Configurations
 
 ### Default Penalty Clauses
 
@@ -784,7 +784,7 @@ impl Default for EconomicManagerConfig {
 }
 ```
 
-## 📈 Statistics and Analytics
+##  Statistics and Analytics
 
 ### get_statistics()
 ```rust
@@ -840,7 +840,7 @@ pub fn get_config(&self) -> &EconomicManagerConfig
 
 Get current system configuration.
 
-## 🧪 Testing and Development
+##  Testing and Development
 
 ### Unit Testing
 
@@ -873,7 +873,7 @@ async fn test_storage_request_processing() {
 - **Performance Monitoring**: Test SLA monitoring and penalty enforcement
 - **Economic Model Validation**: Test pricing, incentives, and market dynamics
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Request Processing
 ```rust

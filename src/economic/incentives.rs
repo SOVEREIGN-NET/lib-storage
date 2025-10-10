@@ -633,7 +633,7 @@ impl IncentiveSystem {
             .map(|score| score.overall_score)
             .unwrap_or(0.5); // New provider default
         
-        // Calculate performance bonus with real reputation integration
+        // Calculate performance bonus with reputation integration
         let performance_bonus = self.calculate_performance_bonus(&performance, reputation_score)?;
         
         // Calculate staking bonus

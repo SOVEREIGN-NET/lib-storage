@@ -3,7 +3,7 @@
 
 This comprehensive integration guide shows how to integrate ZHTP Unified Storage System into various types of applications, from simple web apps to complex distributed systems.
 
-## 📋 Integration Overview
+##  Integration Overview
 
 The ZHTP Storage System can be integrated into:
 - **Web Applications**: Browser-based apps with backend storage
@@ -482,11 +482,11 @@ fn create_default_user_identity() -> ZhtpIdentity {
                     <h4> Network</h4>
                     <p>Nodes: ${stats.dht.total_nodes} | Health: ${(stats.dht.network_health * 100).toFixed(1)}%</p>
                     
-                    <h4>💾 Storage</h4>
+                    <h4> Storage</h4>
                     <p>Files: ${stats.storage.total_content} | Uploads: ${stats.storage.total_uploads} | Downloads: ${stats.storage.total_downloads}</p>
                     <p>Used: ${formatBytes(stats.storage.storage_used)}</p>
                     
-                    <h4>💰 Economic</h4>
+                    <h4> Economic</h4>
                     <p>Contracts: ${stats.economic.total_contracts} | Value Locked: ${stats.economic.value_locked} ZHTP</p>
                 `;
                 
@@ -954,7 +954,7 @@ function App() {
       {/* Statistics */}
       {stats && (
         <section className="stats-section">
-          <h2>📊 System Statistics</h2>
+          <h2> System Statistics</h2>
           <div className="stats-grid">
             <div className="stat-card">
               <h3> Network</h3>
@@ -962,13 +962,13 @@ function App() {
               <p>Health: {(stats.network.health * 100).toFixed(1)}%</p>
             </div>
             <div className="stat-card">
-              <h3>💾 Storage</h3>
+              <h3> Storage</h3>
               <p>Files: {stats.storage.files}</p>
               <p>Uploads: {stats.storage.uploads}</p>
               <p>Downloads: {stats.storage.downloads}</p>
             </div>
             <div className="stat-card">
-              <h3>💰 Economic</h3>
+              <h3> Economic</h3>
               <p>Contracts: {stats.economic.contracts}</p>
               <p>Value Locked: {stats.economic.value_locked} ZHTP</p>
             </div>
@@ -994,7 +994,7 @@ function App() {
               </div>
               <div className="file-actions">
                 <button onClick={() => handleDownload(file)}>
-                  📥 Download
+                   Download
                 </button>
               </div>
             </div>
@@ -1273,7 +1273,7 @@ impl StorageMetrics {
 
 This comprehensive integration guide shows how to integrate ZHTP Unified Storage System into various types of applications, from simple web apps to complex distributed systems.
 
-## 📋 Integration Overview
+##  Integration Overview
 
 The ZHTP Storage System can be integrated into:
 - **Web Applications**: Browser-based apps with backend storage
@@ -1665,7 +1665,7 @@ fn create_default_user_identity() -> ZhtpIdentity {
                         // Refresh file list
                         searchFiles();
                     } else {
-                        statusDiv.innerHTML = `<p style="color: red;">❌ ${result.message}</p>`;
+                        statusDiv.innerHTML = `<p style="color: red;"> ${result.message}</p>`;
                     }
                 } catch (error) {
                     statusDiv.innerHTML = `<p style="color: red;">Upload error: ${error.message}</p>`;
@@ -1752,11 +1752,11 @@ fn create_default_user_identity() -> ZhtpIdentity {
                     <h4> Network</h4>
                     <p>Nodes: ${stats.dht.total_nodes} | Health: ${(stats.dht.network_health * 100).toFixed(1)}%</p>
                     
-                    <h4>💾 Storage</h4>
+                    <h4> Storage</h4>
                     <p>Files: ${stats.storage.total_content} | Uploads: ${stats.storage.total_uploads} | Downloads: ${stats.storage.total_downloads}</p>
                     <p>Used: ${formatBytes(stats.storage.storage_used)}</p>
                     
-                    <h4>💰 Economic</h4>
+                    <h4> Economic</h4>
                     <p>Contracts: ${stats.economic.total_contracts} | Value Locked: ${stats.economic.value_locked} ZHTP</p>
                 `;
                 
@@ -2163,13 +2163,13 @@ function App() {
         setUploadStatus(` ${result.message}`);
         loadUserFiles(); // Refresh file list
       } else {
-        setUploadStatus(`❌ ${result.message}`);
+        setUploadStatus(` ${result.message}`);
       }
 
       setTimeout(() => setUploadStatus(''), 5000);
 
     } catch (error) {
-      setUploadStatus(`❌ Upload failed: ${error}`);
+      setUploadStatus(` Upload failed: ${error}`);
       setTimeout(() => setUploadStatus(''), 5000);
     }
   };
@@ -2224,7 +2224,7 @@ function App() {
       {/* Statistics */}
       {stats && (
         <section className="stats-section">
-          <h2>📊 System Statistics</h2>
+          <h2> System Statistics</h2>
           <div className="stats-grid">
             <div className="stat-card">
               <h3> Network</h3>
@@ -2232,13 +2232,13 @@ function App() {
               <p>Health: {(stats.network.health * 100).toFixed(1)}%</p>
             </div>
             <div className="stat-card">
-              <h3>💾 Storage</h3>
+              <h3> Storage</h3>
               <p>Files: {stats.storage.files}</p>
               <p>Uploads: {stats.storage.uploads}</p>
               <p>Downloads: {stats.storage.downloads}</p>
             </div>
             <div className="stat-card">
-              <h3>💰 Economic</h3>
+              <h3> Economic</h3>
               <p>Contracts: {stats.economic.contracts}</p>
               <p>Value Locked: {stats.economic.value_locked} ZHTP</p>
             </div>
@@ -2264,7 +2264,7 @@ function App() {
               </div>
               <div className="file-actions">
                 <button onClick={() => handleDownload(file)}>
-                  📥 Download
+                   Download
                 </button>
               </div>
             </div>

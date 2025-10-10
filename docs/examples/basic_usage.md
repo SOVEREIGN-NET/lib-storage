@@ -3,7 +3,7 @@
 
 This document provides practical examples of using the ZHTP Unified Storage System for common storage operations. These examples demonstrate the core functionality without complex economic features.
 
-## 📦 Simple File Storage
+##  Simple File Storage
 
 ### Store and Retrieve a Text File
 
@@ -308,7 +308,7 @@ async fn advanced_search_example(
 }
 ```
 
-## 💾 Batch Operations
+##  Batch Operations
 
 ### Upload Multiple Files at Once
 
@@ -358,7 +358,7 @@ async fn batch_upload_example(
         upload_tasks.push((filename.to_string(), upload_request));
     }
     
-    // Execute uploads concurrently (in a real scenario)
+    // Execute uploads concurrently (in a scenario)
     // For this example, we'll do them sequentially
     for (filename, upload_request) in upload_tasks {
         match storage.upload_content(upload_request, identity.clone()).await {
@@ -498,7 +498,7 @@ fn create_production_config() -> UnifiedStorageConfig {
 }
 ```
 
-## 📊 Monitoring and Statistics
+##  Monitoring and Statistics
 
 ### Basic System Monitoring
 
@@ -520,7 +520,7 @@ async fn monitor_storage_system(
     println!("  Network health: {:.1}%", stats.dht_stats.network_health * 100.0);
     
     // Storage usage
-    println!("\\n💾 Storage Usage:");
+    println!("\\n Storage Usage:");
     println!("  Total content items: {}", stats.storage_stats.total_content_count);
     println!("  Storage used: {:.2} MB", 
              stats.storage_stats.total_storage_used as f64 / 1_000_000.0);
@@ -529,14 +529,14 @@ async fn monitor_storage_system(
     
     // Economic activity (if enabled)
     if stats.economic_stats.total_contracts > 0 {
-        println!("\\n💰 Economic Activity:");
+        println!("\\n Economic Activity:");
         println!("  Active contracts: {}", stats.economic_stats.total_contracts);
         println!("  Value locked: {} ZHTP", stats.economic_stats.total_value_locked);
         println!("  Total rewards: {} ZHTP", stats.economic_stats.total_rewards);
     }
     
     // Performance metrics
-    println!("\\n📊 Performance:");
+    println!("\\n Performance:");
     println!("  Messages sent: {}", stats.dht_stats.total_messages_sent);
     println!("  Messages received: {}", stats.dht_stats.total_messages_received);
     println!("  Storage utilization: {:.1}%", stats.dht_stats.storage_utilization);
@@ -571,7 +571,7 @@ async fn start_health_monitoring(mut storage: UnifiedStorageSystem) {
 }
 ```
 
-## 🧪 Testing Utilities
+##  Testing Utilities
 
 ### Create Test Data
 
@@ -673,7 +673,7 @@ async fn verify_upload_download_cycle(
 }
 ```
 
-## 🎯 Complete Working Example
+##  Complete Working Example
 
 Here's a complete example that demonstrates all basic features:
 
@@ -696,7 +696,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!(" Storage system initialized");
     
     // Upload test files
-    println!("\\n📤 Uploading test files...");
+    println!("\\n Uploading test files...");
     let content_hashes = batch_upload_example(&mut storage, identity.clone()).await?;
     
     // Search for uploaded files
@@ -704,7 +704,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     search_files_example(&storage, identity.clone()).await?;
     
     // Download files
-    println!("\\n📥 Downloading files...");
+    println!("\\n Downloading files...");
     let downloaded_content = batch_download_example(&mut storage, content_hashes, identity.clone()).await?;
     
     // Verify content
@@ -714,16 +714,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     
     // Monitor system
-    println!("\\n📊 System status:");
+    println!("\\n System status:");
     monitor_storage_system(&mut storage).await?;
     
     // Perform verification test
-    println!("\\n🧪 Running verification test...");
+    println!("\\n Running verification test...");
     let test_data = b"Verification test data".to_vec();
     let verification_passed = verify_upload_download_cycle(&mut storage, test_data, identity).await?;
     
     if verification_passed {
-        println!("\\n🎉 All tests passed! ZHTP Storage is working correctly.");
+        println!("\\n All tests passed! ZHTP Storage is working correctly.");
     } else {
         println!("\\n Verification failed!");
     }
@@ -754,7 +754,7 @@ fn load_production_key() -> [u8; 32] {
 
 This document provides practical examples of using the ZHTP Unified Storage System for common storage operations. These examples demonstrate the core functionality without complex economic features.
 
-## 📦 Simple File Storage
+##  Simple File Storage
 
 ### Store and Retrieve a Text File
 
@@ -1059,7 +1059,7 @@ async fn advanced_search_example(
 }
 ```
 
-## 💾 Batch Operations
+##  Batch Operations
 
 ### Upload Multiple Files at Once
 
@@ -1109,7 +1109,7 @@ async fn batch_upload_example(
         upload_tasks.push((filename.to_string(), upload_request));
     }
     
-    // Execute uploads concurrently (in a real scenario)
+    // Execute uploads concurrently (in a scenario)
     // For this example, we'll do them sequentially
     for (filename, upload_request) in upload_tasks {
         match storage.upload_content(upload_request, identity.clone()).await {
@@ -1118,7 +1118,7 @@ async fn batch_upload_example(
                 upload_results.insert(filename, content_hash);
             }
             Err(e) => {
-                eprintln!("❌ Failed to upload {}: {}", filename, e);
+                eprintln!(" Failed to upload {}: {}", filename, e);
             }
         }
     }
@@ -1154,7 +1154,7 @@ async fn batch_download_example(
                 download_results.insert(filename, content);
             }
             Err(e) => {
-                eprintln!("❌ Failed to download {}: {}", filename, e);
+                eprintln!(" Failed to download {}: {}", filename, e);
             }
         }
     }
@@ -1249,7 +1249,7 @@ fn create_production_config() -> UnifiedStorageConfig {
 }
 ```
 
-## 📊 Monitoring and Statistics
+##  Monitoring and Statistics
 
 ### Basic System Monitoring
 
@@ -1271,7 +1271,7 @@ async fn monitor_storage_system(
     println!("  Network health: {:.1}%", stats.dht_stats.network_health * 100.0);
     
     // Storage usage
-    println!("\\n💾 Storage Usage:");
+    println!("\\n Storage Usage:");
     println!("  Total content items: {}", stats.storage_stats.total_content_count);
     println!("  Storage used: {:.2} MB", 
              stats.storage_stats.total_storage_used as f64 / 1_000_000.0);
@@ -1280,14 +1280,14 @@ async fn monitor_storage_system(
     
     // Economic activity (if enabled)
     if stats.economic_stats.total_contracts > 0 {
-        println!("\\n💰 Economic Activity:");
+        println!("\\n Economic Activity:");
         println!("  Active contracts: {}", stats.economic_stats.total_contracts);
         println!("  Value locked: {} ZHTP", stats.economic_stats.total_value_locked);
         println!("  Total rewards: {} ZHTP", stats.economic_stats.total_rewards);
     }
     
     // Performance metrics
-    println!("\\n📊 Performance:");
+    println!("\\n Performance:");
     println!("  Messages sent: {}", stats.dht_stats.total_messages_sent);
     println!("  Messages received: {}", stats.dht_stats.total_messages_received);
     println!("  Storage utilization: {:.1}%", stats.dht_stats.storage_utilization);
@@ -1322,7 +1322,7 @@ async fn start_health_monitoring(mut storage: UnifiedStorageSystem) {
 }
 ```
 
-## 🧪 Testing Utilities
+##  Testing Utilities
 
 ### Create Test Data
 
@@ -1415,7 +1415,7 @@ async fn verify_upload_download_cycle(
     if matches {
         println!(" Upload/download cycle verification passed");
     } else {
-        println!("❌ Upload/download cycle verification failed");
+        println!(" Upload/download cycle verification failed");
         println!("  Original size: {} bytes", test_data.len());
         println!("  Retrieved size: {} bytes", retrieved_data.len());
     }
@@ -1424,7 +1424,7 @@ async fn verify_upload_download_cycle(
 }
 ```
 
-## 🎯 Complete Working Example
+##  Complete Working Example
 
 Here's a complete example that demonstrates all basic features:
 
@@ -1447,7 +1447,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!(" Storage system initialized");
     
     // Upload test files
-    println!("\\n📤 Uploading test files...");
+    println!("\\n Uploading test files...");
     let content_hashes = batch_upload_example(&mut storage, identity.clone()).await?;
     
     // Search for uploaded files
@@ -1455,7 +1455,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     search_files_example(&storage, identity.clone()).await?;
     
     // Download files
-    println!("\\n📥 Downloading files...");
+    println!("\\n Downloading files...");
     let downloaded_content = batch_download_example(&mut storage, content_hashes, identity.clone()).await?;
     
     // Verify content
@@ -1465,18 +1465,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     
     // Monitor system
-    println!("\\n📊 System status:");
+    println!("\\n System status:");
     monitor_storage_system(&mut storage).await?;
     
     // Perform verification test
-    println!("\\n🧪 Running verification test...");
+    println!("\\n Running verification test...");
     let test_data = b"Verification test data".to_vec();
     let verification_passed = verify_upload_download_cycle(&mut storage, test_data, identity).await?;
     
     if verification_passed {
         println!("\\n All tests passed! ZHTP Storage is working correctly.");
     } else {
-        println!("\\n❌ Verification failed!");
+        println!("\\n Verification failed!");
     }
     
     Ok(())

@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## 📦 Basic Storage Operations
+##  Basic Storage Operations
 
 ### Storing Content
 
@@ -144,7 +144,7 @@ async fn search_documents(
 }
 ```
 
-## 💰 Economic Storage Features
+##  Economic Storage Features
 
 ### Getting Storage Quotes
 
@@ -396,7 +396,7 @@ async fn start_maintenance_loop(mut storage: UnifiedStorageSystem) {
 }
 ```
 
-## 🎯 Complete Example Application
+##  Complete Example Application
 
 Here's a complete example that demonstrates the main features:
 
@@ -659,7 +659,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 ```
 
-## 📦 Basic Storage Operations
+##  Basic Storage Operations
 
 ### Storing Content
 
@@ -764,7 +764,7 @@ async fn search_documents(
 }
 ```
 
-## 💰 Economic Storage Features
+##  Economic Storage Features
 
 ### Getting Storage Quotes
 
@@ -1016,7 +1016,7 @@ async fn start_maintenance_loop(mut storage: UnifiedStorageSystem) {
 }
 ```
 
-## 🎯 Complete Example Application
+##  Complete Example Application
 
 Here's a complete example that demonstrates the main features:
 
@@ -1183,7 +1183,7 @@ let config = UnifiedStorageConfig {
 };
 ```
 
-## 🚨 Error Handling
+##  Error Handling
 
 ### Common Error Patterns
 

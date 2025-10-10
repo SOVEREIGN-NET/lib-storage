@@ -3,7 +3,7 @@
 
 Complete API documentation for the ZHTP Unified Storage System.
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [UnifiedStorageSystem](#unifiedstoragesystem) - Main system interface
 - [Configuration](#configuration) - System configuration types
@@ -487,7 +487,7 @@ match system.upload_content(request, identity).await {
 
 Complete API documentation for the ZHTP Unified Storage System.
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [UnifiedStorageSystem](#unifiedstoragesystem) - Main system interface
 - [Configuration](#configuration) - System configuration types

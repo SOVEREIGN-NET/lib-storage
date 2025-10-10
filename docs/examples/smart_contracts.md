@@ -3,7 +3,7 @@
 
 The ZHTP Unified Storage System includes built-in support for storing and executing smart contracts through the DHT layer. This example demonstrates how to deploy, query, and interact with smart contracts stored in the distributed network.
 
-## 📋 Overview
+##  Overview
 
 Smart contracts in ZHTP storage are:
 - **WASM-based**: Contracts are compiled to WebAssembly for secure execution
@@ -285,7 +285,7 @@ async fn discover_contracts(
     
     let demo_contracts = storage.search_content(demo_query, user.clone()).await?;
     
-    println!("\\n🧪 Found {} demo contracts:", demo_contracts.len());
+    println!("\\n Found {} demo contracts:", demo_contracts.len());
     for contract in &demo_contracts {
         println!("   {} - {}", contract.filename, contract.description);
     }
@@ -303,7 +303,7 @@ async fn discover_contracts(
     
     let author_contracts = storage.search_content(author_query, user).await?;
     
-    println!("\\n👤 Found {} ZHTP contracts:", author_contracts.len());
+    println!("\\n Found {} ZHTP contracts:", author_contracts.len());
     for contract in &author_contracts {
         println!("   {}", contract.filename);
     }
@@ -333,7 +333,7 @@ async fn analyze_contract(
     // Parse contract information
     let contract_info: serde_json::Value = serde_json::from_slice(&contract_data)?;
     
-    println!("📋 Contract Analysis:");
+    println!(" Contract Analysis:");
     println!("  Contract ID: {}", contract_info["contract_id"].as_str().unwrap_or("unknown"));
     
     if let Some(metadata) = contract_info["metadata"].as_object() {
@@ -419,7 +419,7 @@ async fn simulate_contract_execution(
     println!("  Function: {}", function_name);
     println!("  Arguments: {:?}", args);
     
-    // In a real implementation, this would:
+    // In a implementation, this would:
     // 1. Download contract bytecode
     // 2. Initialize WASM runtime
     // 3. Load contract into runtime
@@ -465,7 +465,7 @@ async fn simulate_contract_execution(
                 "get_payment_status" if !args.is_empty() => {
                     let payment_id = &args[0];
                     let status = "pending"; // Simulated status
-                    println!("  📊 Payment {} status: {}", payment_id, status);
+                    println!("   Payment {} status: {}", payment_id, status);
                     Ok(status.to_string())
                 }
                 
@@ -562,7 +562,7 @@ async fn interact_with_payment_processor(
 }
 ```
 
-## 📊 Contract Registry Management
+##  Contract Registry Management
 
 ### Contract Version Management
 
@@ -572,7 +572,7 @@ async fn manage_contract_versions(
     developer: ZhtpIdentity
 ) -> Result<(), Box<dyn std::error::Error>> {
     
-    println!("📦 Managing contract versions");
+    println!(" Managing contract versions");
     
     // Deploy version 1.0
     let v1_metadata = ContractMetadata {
@@ -677,7 +677,7 @@ async fn deploy_contract_version(
 }
 ```
 
-## 🧪 Complete Contract Example
+##  Complete Contract Example
 
 ```rust
 #[tokio::main]
@@ -692,7 +692,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let developer = create_developer_identity()?;
     let user = create_user_identity()?;
     
-    println!("\\n📤 Deploying contracts...");
+    println!("\\n Deploying contracts...");
     
     // Deploy contracts
     let hello_contract = deploy_hello_world_contract(&mut storage, developer.clone()).await?;
@@ -709,19 +709,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     interact_with_hello_world(&mut storage, user.clone()).await?;
     interact_with_payment_processor(&mut storage, user.clone()).await?;
     
-    println!("\\n📊 System statistics:");
+    println!("\\n System statistics:");
     let stats = storage.get_statistics().await?;
     println!("  Total content: {}", stats.storage_stats.total_content_count);
     println!("  Storage used: {} bytes", stats.storage_stats.total_storage_used);
     
-    println!("\\n🎉 Smart contract example completed successfully!");
+    println!("\\n Smart contract example completed successfully!");
     
     Ok(())
 }
 
 // Helper functions for compilation and packaging
 fn compile_hello_world_contract() -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    // In a real implementation, this would compile Rust/AssemblyScript to WASM
+    // In a implementation, this would compile Rust/AssemblyScript to WASM
     // For this example, we'll return a minimal WASM module
     Ok(create_minimal_wasm_module("hello_world"))
 }
@@ -777,7 +777,7 @@ fn create_user_identity() -> Result<ZhtpIdentity, Box<dyn std::error::Error>> {
 
 The ZHTP Unified Storage System includes built-in support for storing and executing smart contracts through the DHT layer. This example demonstrates how to deploy, query, and interact with smart contracts stored in the distributed network.
 
-## 📋 Overview
+##  Overview
 
 Smart contracts in ZHTP storage are:
 - **WASM-based**: Contracts are compiled to WebAssembly for secure execution
@@ -1059,7 +1059,7 @@ async fn discover_contracts(
     
     let demo_contracts = storage.search_content(demo_query, user.clone()).await?;
     
-    println!("\\n🧪 Found {} demo contracts:", demo_contracts.len());
+    println!("\\n Found {} demo contracts:", demo_contracts.len());
     for contract in &demo_contracts {
         println!("   {} - {}", contract.filename, contract.description);
     }
@@ -1077,7 +1077,7 @@ async fn discover_contracts(
     
     let author_contracts = storage.search_content(author_query, user).await?;
     
-    println!("\\n👤 Found {} ZHTP contracts:", author_contracts.len());
+    println!("\\n Found {} ZHTP contracts:", author_contracts.len());
     for contract in &author_contracts {
         println!("   {}", contract.filename);
     }
@@ -1107,7 +1107,7 @@ async fn analyze_contract(
     // Parse contract information
     let contract_info: serde_json::Value = serde_json::from_slice(&contract_data)?;
     
-    println!("📋 Contract Analysis:");
+    println!(" Contract Analysis:");
     println!("  Contract ID: {}", contract_info["contract_id"].as_str().unwrap_or("unknown"));
     
     if let Some(metadata) = contract_info["metadata"].as_object() {
@@ -1164,7 +1164,7 @@ async fn analyze_contract(
             if bytecode.starts_with(&[0x00, 0x61, 0x73, 0x6d]) {
                 println!("   Valid WASM magic number");
             } else {
-                println!("  ❌ Invalid WASM magic number");
+                println!("   Invalid WASM magic number");
             }
         }
     }
@@ -1193,7 +1193,7 @@ async fn simulate_contract_execution(
     println!("  Function: {}", function_name);
     println!("  Arguments: {:?}", args);
     
-    // In a real implementation, this would:
+    // In a implementation, this would:
     // 1. Download contract bytecode
     // 2. Initialize WASM runtime
     // 3. Load contract into runtime
@@ -1239,7 +1239,7 @@ async fn simulate_contract_execution(
                 "get_payment_status" if !args.is_empty() => {
                     let payment_id = &args[0];
                     let status = "pending"; // Simulated status
-                    println!("  📊 Payment {} status: {}", payment_id, status);
+                    println!("   Payment {} status: {}", payment_id, status);
                     Ok(status.to_string())
                 }
                 
@@ -1336,7 +1336,7 @@ async fn interact_with_payment_processor(
 }
 ```
 
-## 📊 Contract Registry Management
+##  Contract Registry Management
 
 ### Contract Version Management
 
@@ -1346,7 +1346,7 @@ async fn manage_contract_versions(
     developer: ZhtpIdentity
 ) -> Result<(), Box<dyn std::error::Error>> {
     
-    println!("📦 Managing contract versions");
+    println!(" Managing contract versions");
     
     // Deploy version 1.0
     let v1_metadata = ContractMetadata {
@@ -1451,7 +1451,7 @@ async fn deploy_contract_version(
 }
 ```
 
-## 🧪 Complete Contract Example
+##  Complete Contract Example
 
 ```rust
 #[tokio::main]
@@ -1466,7 +1466,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let developer = create_developer_identity()?;
     let user = create_user_identity()?;
     
-    println!("\\n📤 Deploying contracts...");
+    println!("\\n Deploying contracts...");
     
     // Deploy contracts
     let hello_contract = deploy_hello_world_contract(&mut storage, developer.clone()).await?;
@@ -1483,7 +1483,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     interact_with_hello_world(&mut storage, user.clone()).await?;
     interact_with_payment_processor(&mut storage, user.clone()).await?;
     
-    println!("\\n📊 System statistics:");
+    println!("\\n System statistics:");
     let stats = storage.get_statistics().await?;
     println!("  Total content: {}", stats.storage_stats.total_content_count);
     println!("  Storage used: {} bytes", stats.storage_stats.total_storage_used);
@@ -1495,7 +1495,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 // Helper functions for compilation and packaging
 fn compile_hello_world_contract() -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    // In a real implementation, this would compile Rust/AssemblyScript to WASM
+    // In a implementation, this would compile Rust/AssemblyScript to WASM
     // For this example, we'll return a minimal WASM module
     Ok(create_minimal_wasm_module("hello_world"))
 }
