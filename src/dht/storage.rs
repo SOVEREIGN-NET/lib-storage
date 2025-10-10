@@ -1137,7 +1137,7 @@ impl DhtStorage {
 
     /// Handle smart contract execution through DHT
     async fn handle_contract_execute(&mut self, contract_data: &crate::types::dht_types::ContractDhtData, sender_id: &NodeId) {
-        println!("⚡ Contract execution request from {}", hex::encode(&sender_id.as_bytes()[..4]));
+        println!(" Contract execution request from {}", hex::encode(&sender_id.as_bytes()[..4]));
         
         let contract_key = format!("contract:{}", contract_data.contract_id);
         

@@ -271,7 +271,7 @@ impl ContentManager {
         // Store content directly in DHT (no provider requirements)
         info!("📦 Storing {} bytes directly in DHT storage (test mode)", processed_content.len());
         self.dht_storage.store_data(content_hash.clone(), processed_content.clone()).await?;
-        info!("✅ Content stored in DHT with hash: {:?}", content_hash);
+        info!(" Content stored in DHT with hash: {:?}", content_hash);
 
         // Create metadata
         let upload_time = std::time::SystemTime::now()
