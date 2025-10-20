@@ -38,6 +38,8 @@ pub struct ContentManager {
     content_keys: HashMap<ContentHash, [u8; 32]>,
     /// Key derivation info for reproducible key generation
     key_derivation_salt: [u8; 32],
+    /// Wallet-content ownership manager
+    wallet_content_manager: crate::wallet_content_integration::WalletContentManager,
 }
 
 /// Access control list for content
@@ -172,6 +174,7 @@ impl ContentManager {
             master_keypair,
             content_keys: HashMap::new(),
             key_derivation_salt: salt,
+            wallet_content_manager: crate::wallet_content_integration::WalletContentManager::new(),
         })
     }
     
@@ -192,6 +195,7 @@ impl ContentManager {
             master_keypair,
             content_keys: HashMap::new(),
             key_derivation_salt,
+            wallet_content_manager: crate::wallet_content_integration::WalletContentManager::new(),
         }
     }
     
@@ -304,6 +308,9 @@ impl ContentManager {
             checksum: content_hash.clone(), // Use content hash as checksum
         };
 
+        // Extract wallet ID for content ownership registration (before uploader is moved)
+        let owner_wallet_id = uploader.wallet_manager.wallets.values().next().map(|w| w.id.clone());
+        
         // Create access control
         let acl = AccessControlList {
             content_hash: content_hash.clone(),
@@ -335,7 +342,100 @@ impl ContentManager {
         // Update search index
         self.update_search_index(&content_hash, &request.tags, &request.filename).await?;
 
+        // Store metadata in DHT for distributed access
+        if let Err(e) = self.store_metadata_in_dht(&content_hash).await {
+            log::warn!("Failed to store metadata in DHT: {}", e);
+        }
+
+        // Register content ownership with uploader's wallet
+        if let Some(wallet_id) = owner_wallet_id {
+            // Get the metadata we just stored
+            if let Some(metadata) = self.content_metadata.get(&content_hash) {
+                // Register ownership (no purchase price for uploads)
+                if let Err(e) = self.wallet_content_manager.register_content_ownership(
+                    content_hash.clone(),
+                    wallet_id,
+                    metadata,
+                    0, // No purchase price for uploads
+                ) {
+                    log::warn!("Failed to register content ownership: {}", e);
+                }
+            }
+        }
+
         Ok(content_hash)
+    }
+
+    /// Store content metadata in DHT for distributed access
+    async fn store_metadata_in_dht(&mut self, content_hash: &ContentHash) -> Result<()> {
+        // Get metadata from local cache
+        let metadata = self.content_metadata.get(content_hash)
+            .ok_or_else(|| anyhow!("Metadata not found for content hash"))?;
+        
+        // Serialize metadata to binary
+        let serialized_metadata = bincode::serialize(metadata)
+            .map_err(|e| anyhow!("Failed to serialize metadata: {}", e))?;
+        
+        // Create DHT key for metadata: hash("metadata:{content_hash}")
+        let metadata_key_bytes = [b"metadata:", content_hash.as_bytes()].concat();
+        let metadata_hash = hash_blake3(&metadata_key_bytes);
+        let metadata_key = Hash::from_bytes(&metadata_hash[..32]);
+        
+        // Store in DHT
+        self.dht_storage.store_data(metadata_key, serialized_metadata).await?;
+        
+        info!("📊 Stored metadata for content {} in DHT", hex::encode(&content_hash.as_bytes()[..8]));
+        Ok(())
+    }
+
+    /// Retrieve content metadata from DHT or local cache
+    pub async fn get_content_metadata(&mut self, content_hash: &ContentHash) -> Result<ContentMetadata> {
+        // Try local cache first
+        if let Some(metadata) = self.content_metadata.get(content_hash) {
+            return Ok(metadata.clone());
+        }
+        
+        // Retrieve from DHT
+        let metadata_key_bytes = [b"metadata:", content_hash.as_bytes()].concat();
+        let metadata_hash = hash_blake3(&metadata_key_bytes);
+        let metadata_key = Hash::from_bytes(&metadata_hash[..32]);
+        
+        let serialized_metadata = self.dht_storage.retrieve_data(metadata_key).await?
+            .ok_or_else(|| anyhow!("Metadata not found in DHT for content hash"))?;
+        
+        // Deserialize metadata
+        let metadata: ContentMetadata = bincode::deserialize(&serialized_metadata)
+            .map_err(|e| anyhow!("Failed to deserialize metadata: {}", e))?;
+        
+        // Cache locally
+        self.content_metadata.insert(content_hash.clone(), metadata.clone());
+        
+        info!("📥 Retrieved metadata for content {} from DHT", hex::encode(&content_hash.as_bytes()[..8]));
+        Ok(metadata)
+    }
+
+    /// Calculate storage cost based on size, tier, and replication
+    pub fn calculate_storage_cost(&self, size: u64, tier: &StorageTier, replication_factor: u8, duration_days: u32) -> u64 {
+        // Base cost per GB per day
+        let base_cost_per_gb_day = match tier {
+            StorageTier::Hot => 100,      // 100 ZHTP per GB per day
+            StorageTier::Warm => 50,      // 50 ZHTP per GB per day
+            StorageTier::Cold => 10,      // 10 ZHTP per GB per day
+            StorageTier::Archive => 1,    // 1 ZHTP per GB per day
+        };
+        
+        // Calculate size in GB
+        let size_gb = (size as f64) / (1024.0 * 1024.0 * 1024.0);
+        
+        // Apply replication multiplier
+        let replication_multiplier = replication_factor as f64;
+        
+        // Calculate total cost
+        let cost_per_day = (size_gb * base_cost_per_gb_day as f64 * replication_multiplier).ceil() as u64;
+        let total_cost = cost_per_day * duration_days as u64;
+        
+        // Minimum cost of 1 ZHTP per day
+        total_cost.max(duration_days as u64)
     }
 
     /// Download content with access control checks
@@ -352,8 +452,22 @@ impl ContentManager {
         let content_hash = if let Some(version) = request.version {
             self.get_version_hash(&request.content_hash, version)?
         } else {
-            request.content_hash
+            request.content_hash.clone()
         };
+
+        // Update metadata access tracking
+        if let Some(metadata) = self.content_metadata.get_mut(&content_hash) {
+            metadata.last_accessed = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs();
+            metadata.access_count += 1;
+            
+            // Update in DHT (don't fail download if this fails)
+            if let Err(e) = self.store_metadata_in_dht(&content_hash).await {
+                log::warn!("Failed to update metadata in DHT: {}", e);
+            }
+        }
 
         // Retrieve from DHT
         let content = self.dht_storage.retrieve_data(content_hash.clone()).await?
@@ -963,6 +1077,12 @@ mod tests {
             created_at,
             last_active: created_at,
             recovery_keys: vec![],
+            owner_identity_id: None,
+            reward_wallet_id: None,
+            encrypted_master_seed: None,
+            next_wallet_index: 0,
+            password_hash: None,
+            master_seed_phrase: None,
         }
     }
 }

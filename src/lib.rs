@@ -23,6 +23,9 @@ pub mod economic;
 // Content management layer (Phase D - COMPLETED)
 pub mod content;
 
+// Wallet-Content integration layer
+pub mod wallet_content_integration;
+
 // Erasure coding module
 pub mod erasure;
 
@@ -44,6 +47,7 @@ pub use economic::{
     quality::*, penalties::*, rewards::*, manager::*
 };
 pub use content::{ContentManager, UploadRequest, DownloadRequest, SearchQuery, AccessControlSettings, ContentStorageRequirements};
+pub use wallet_content_integration::{WalletContentManager, WalletContentStatistics};
 pub use erasure::*;
 
 use anyhow::Result;
