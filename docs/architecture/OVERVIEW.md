@@ -26,7 +26,7 @@ The ZHTP Unified Storage System implements a sophisticated multi-layer architect
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## 🔄 Data Flow Architecture
+##  Data Flow Architecture
 
 ### Storage Operation Flow
 ```
@@ -238,7 +238,7 @@ Node G ←→ Node H ←→ Node I
 - **Data Integrity**: 99%+ consistency guarantee
 - **Bandwidth Efficiency**: 80%+ utilization target
 
-## 🔄 State Management
+##  State Management
 
 ### Contract Lifecycle
 ```

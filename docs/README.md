@@ -58,7 +58,7 @@ Unified API that orchestrates all subsystems through the `UnifiedStorageSystem`.
 - **Erasure Coding**: Reed-Solomon encoding for data redundancy
 - **Automatic SLA Enforcement**: Self-enforcing contracts with penalties and rewards
 
-## 🔧 Technical Specifications
+##  Technical Specifications
 
 - **Language**: Rust 2021 Edition
 - **Cryptography**: Post-quantum algorithms via `lib-crypto`

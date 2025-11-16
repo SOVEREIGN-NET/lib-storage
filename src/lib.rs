@@ -29,6 +29,21 @@ pub mod wallet_content_integration;
 // Erasure coding module
 pub mod erasure;
 
+// Storage proof system (Phase F - NEW)
+pub mod proofs;
+
+// Data integrity layer (Phase F - NEW)
+pub mod integrity;
+
+// Multi-level caching system (Phase F - NEW)
+pub mod cache;
+
+// Storage optimization (Phase F - NEW)
+pub mod optimization;
+
+// Distributed consistency (Phase F - NEW)
+pub mod consistency;
+
 // Re-export core types (avoiding conflicts)
 pub use types::{
     dht_types::*, storage_types::*, stats_types::*
@@ -49,6 +64,9 @@ pub use economic::{
 pub use content::{ContentManager, UploadRequest, DownloadRequest, SearchQuery, AccessControlSettings, ContentStorageRequirements};
 pub use wallet_content_integration::{WalletContentManager, WalletContentStatistics};
 pub use erasure::*;
+pub use proofs::{StorageProof, RetrievalProof, generate_storage_proof, generate_retrieval_proof};
+pub use integrity::{IntegrityManager, IntegrityMetadata, IntegrityStatus, ChecksumAlgorithm};
+pub use cache::{CacheManager, CacheEntry, EvictionPolicy, CacheStats};
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -392,6 +410,14 @@ impl UnifiedStorageSystem {
     /// Get configuration
     pub fn get_config(&self) -> &UnifiedStorageConfig {
         &self.config
+    }
+
+    /// Get DHT content by hex hash string (for Web4 content retrieval)
+    /// CRITICAL FIX: Content is stored in content_manager's dht_storage, not self.dht_storage!
+    pub async fn get_dht_content_by_hex(&mut self, content_hash_hex: &str) -> Result<Option<Vec<u8>>> {
+        // FIXED: Query the SAME dht_storage instance that upload_content() stores to
+        // Content is stored via content_manager.dht_storage, so we must query from there
+        self.content_manager.get_from_dht_storage(content_hash_hex).await
     }
 
     /// Update configuration

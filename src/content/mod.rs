@@ -233,11 +233,26 @@ impl ContentManager {
         request: UploadRequest,
         uploader: ZhtpIdentity,
     ) -> Result<ContentHash> {
+        // Calculate hash of ORIGINAL content before processing
+        let original_hash = Hash::from_bytes(&blake3::hash(&request.content).as_bytes()[..32]);
+        let original_size = request.content.len();
+        
+        info!(" 📤 Uploading content: {} bytes", original_size);
+        info!("    Original hash: {}", hex::encode(original_hash.as_bytes()));
+        info!("    Compress: {}, Encrypt: {}", request.compress, request.encrypt);
+        
         // Process content (compression, encryption)
         let processed_content = self.process_content_for_upload(&request).await?;
         
-        // Calculate content hash
+        // Calculate hash of PROCESSED content (what's actually stored in DHT)
         let content_hash = Hash::from_bytes(&blake3::hash(&processed_content).as_bytes()[..32]);
+        let processed_size = processed_content.len();
+
+        info!("  Processed content: {} bytes", processed_size);
+        info!("    Storage hash: {}", hex::encode(content_hash.as_bytes()));
+        if request.compress || request.encrypt {
+            info!("      Storage hash differs from original due to processing!");
+        }
 
         // Create economic storage request
         let economic_request = EconomicStorageRequest {
@@ -273,9 +288,10 @@ impl ContentManager {
         // let _contract_id = self.economic_manager.create_contract(quote, content_hash.clone(), processed_content.len() as u64).await?;
 
         // Store content directly in DHT (no provider requirements)
-        info!(" Storing {} bytes directly in DHT storage (test mode)", processed_content.len());
+        let hex_hash = hex::encode(content_hash.as_bytes());
+        info!(" Storing {} bytes directly in DHT storage (test mode) with hash: {}", processed_content.len(), hex_hash);
         self.dht_storage.store_data(content_hash.clone(), processed_content.clone()).await?;
-        info!(" Content stored in DHT with hash: {:?}", content_hash);
+        info!("  Content stored in DHT with hex key: {}", hex_hash);
 
         // Create metadata
         let upload_time = std::time::SystemTime::now()
@@ -384,7 +400,7 @@ impl ContentManager {
         // Store in DHT
         self.dht_storage.store_data(metadata_key, serialized_metadata).await?;
         
-        info!("📊 Stored metadata for content {} in DHT", hex::encode(&content_hash.as_bytes()[..8]));
+        info!(" Stored metadata for content {} in DHT", hex::encode(&content_hash.as_bytes()[..8]));
         Ok(())
     }
 
@@ -943,6 +959,11 @@ impl ContentManager {
         } else {
             Err(anyhow!("Content not found"))
         }
+    }
+    
+    /// Get direct access to DHT storage (for UnifiedStorageSystem to query the correct instance)
+    pub async fn get_from_dht_storage(&mut self, key: &str) -> Result<Option<Vec<u8>>> {
+        self.dht_storage.get(key).await
     }
 }
 

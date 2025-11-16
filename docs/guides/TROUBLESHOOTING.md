@@ -473,7 +473,7 @@ async fn refresh_identity(identity: &mut ZhtpIdentity) -> Result<()> {
 }
 ```
 
-## 🔧 Debugging Tools
+##  Debugging Tools
 
 ### Enable Debug Logging
 

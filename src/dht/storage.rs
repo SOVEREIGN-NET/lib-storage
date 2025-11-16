@@ -88,8 +88,23 @@ impl DhtStorage {
         let key: DhtKey = content_hash; // Use DhtKey type for strongly typed keys
         let key_str = hex::encode(key.as_bytes());
         
+        println!(" 💾 DhtStorage::store_data() called");
+        println!("    Hash (first 16 chars): {}...", &key_str[..16.min(key_str.len())]);
+        println!("    Full hex key: {}", key_str);
+        println!("    Data size: {} bytes", data.len());
+        
         // Store locally first
         self.store(key_str.clone(), data.clone(), None).await?;
+        
+        println!("     Stored locally in HashMap with key: {}", key_str);
+        println!("    HashMap now contains {} entries", self.storage.len());
+        
+        // Verify it was actually stored
+        if self.storage.contains_key(&key_str) {
+            println!("     VERIFIED: Key exists in HashMap");
+        } else {
+            println!("     WARNING: Key NOT found in HashMap after store!");
+        }
         
         // If network is available, replicate to other nodes
         if self.network.is_some() {
@@ -472,6 +487,18 @@ impl DhtStorage {
     /// List all stored keys
     pub fn list_keys(&self) -> Vec<String> {
         self.storage.keys().cloned().collect()
+    }
+    
+    /// List all stored keys with their sizes (for debugging)
+    pub fn list_keys_with_info(&self) -> Vec<(String, usize)> {
+        self.storage.iter()
+            .map(|(key, entry)| (key.clone(), entry.value.len()))
+            .collect()
+    }
+    
+    /// Check if a specific key exists in storage
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.storage.contains_key(key)
     }
     
     /// Get storage statistics

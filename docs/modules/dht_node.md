@@ -254,7 +254,7 @@ pub struct DhtStats {
 }
 ```
 
-## 🔧 Network Operations
+##  Network Operations
 
 ### start_network_processing()
 ```rust

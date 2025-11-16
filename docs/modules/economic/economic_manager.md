@@ -363,7 +363,7 @@ pub struct EconomicStats {
 }
 ```
 
-## 🔧 Configuration Management
+##  Configuration Management
 
 ### update_config()
 ```rust

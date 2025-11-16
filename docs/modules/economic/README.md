@@ -333,7 +333,7 @@ pub struct MarketMetrics {
 - **Provider Retention**: Provider churn and loyalty metrics
 - **Contract Success Rate**: Percentage of successfully completed contracts
 
-## 🔧 Configuration
+##  Configuration
 
 ### Economic Constants
 

@@ -57,7 +57,7 @@ The DHT layer follows a traditional Kademlia architecture with several ZHTP-spec
 - **Self-Healing**: Automatic recovery from node failures
 - **Load Balancing**: Distribute load based on node capabilities
 
-## 🔧 Configuration
+##  Configuration
 
 ### DHT Constants
 ```rust
@@ -93,7 +93,7 @@ let node_manager = DhtNodeManager::new_with_network(
 - **Data Integrity**: 99%+ consistency guarantee
 - **Replication Reliability**: Automatic failure recovery
 
-## 🔄 Operation Flow
+##  Operation Flow
 
 ### Content Storage Flow
 ```

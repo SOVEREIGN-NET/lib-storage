@@ -508,7 +508,7 @@ fn create_economic_request(data: Vec<u8>, requester: ZhtpIdentity) -> EconomicSt
 }
 ```
 
-## 🔧 Configuration Best Practices
+##  Configuration Best Practices
 
 ### Production Configuration
 

@@ -1008,7 +1008,7 @@ function App() {
 export default App;
 ```
 
-## 🔧 Microservices Integration
+##  Microservices Integration
 
 ### Docker Container Configuration
 

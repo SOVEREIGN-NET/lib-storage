@@ -414,7 +414,7 @@ async fn simulate_contract_execution(
     caller: ZhtpIdentity
 ) -> Result<String, Box<dyn std::error::Error>> {
     
-    println!("🔄 Simulating contract execution:");
+    println!(" Simulating contract execution:");
     println!("  Contract: {}", contract_id);
     println!("  Function: {}", function_name);
     println!("  Arguments: {:?}", args);
@@ -480,7 +480,7 @@ async fn simulate_contract_execution(
 }
 ```
 
-## 🔄 Contract Interaction Examples
+##  Contract Interaction Examples
 
 ### Using Hello World Contract
 

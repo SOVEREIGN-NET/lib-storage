@@ -415,7 +415,7 @@ async fn batch_download_example(
 }
 ```
 
-## 🔧 Configuration Examples
+##  Configuration Examples
 
 ### Custom Storage Configuration
 
