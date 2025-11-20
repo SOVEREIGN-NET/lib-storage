@@ -13,9 +13,10 @@ use serde::{Deserialize, Serialize};
 use lib_crypto::Hash;
 
 
-/// Reward manager for storage providers
+/// Storage reward tracker for storage providers
+/// Tracks metrics and performance, delegates actual reward calculation to lib-economy
 #[derive(Debug)]
-pub struct RewardManager {
+pub struct StorageRewardTracker {
     /// Reward tier thresholds
     tier_thresholds: HashMap<RewardTier, RewardThreshold>,
     /// Provider performance history
@@ -64,8 +65,8 @@ pub struct RewardEvent {
     pub timestamp: u64,
 }
 
-impl RewardManager {
-    /// Create new reward manager
+impl StorageRewardTracker {
+    /// Create new storage reward tracker
     pub fn new() -> Self {
         let mut tier_thresholds = HashMap::new();
 
@@ -303,7 +304,7 @@ pub struct RewardStats {
     pub average_tier_distribution: HashMap<RewardTier, TierStats>,
 }
 
-impl Default for RewardManager {
+impl Default for StorageRewardTracker {
     fn default() -> Self {
         Self::new()
     }
@@ -315,14 +316,14 @@ mod tests {
 
     #[test]
     fn test_reward_manager_creation() {
-        let manager = RewardManager::new();
+        let manager = StorageRewardTracker::new();
         assert_eq!(manager.tier_thresholds.len(), 5);
         assert_eq!(manager.provider_performance.len(), 0);
     }
 
     #[test]
     fn test_tier_determination() {
-        let manager = RewardManager::new();
+        let manager = StorageRewardTracker::new();
         
         let high_performance = ProviderPerformance {
             node_id: Hash::from_bytes(&[1u8; 32]),
@@ -341,7 +342,7 @@ mod tests {
 
     #[test]
     fn test_reward_calculation() {
-        let mut manager = RewardManager::new();
+        let mut manager = StorageRewardTracker::new();
         let node_id = Hash::from_bytes(&[1u8; 32]);
 
         let performance = ProviderPerformance {

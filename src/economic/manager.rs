@@ -38,8 +38,8 @@ pub struct EconomicStorageManager {
     quality_assurance: QualityAssurance,
     /// Penalty enforcer
     penalty_enforcer: PenaltyEnforcer,
-    /// Reward manager
-    reward_manager: RewardManager,
+    /// Storage reward tracker (metrics only)
+    reward_tracker: StorageRewardTracker,
 }
 
 impl EconomicStorageManager {
@@ -55,7 +55,7 @@ impl EconomicStorageManager {
             incentive_manager: IncentiveSystem::new(IncentiveConfig::default()),
             quality_assurance: QualityAssurance::new(QualityConfig::default()),
             penalty_enforcer: PenaltyEnforcer::new(),
-            reward_manager: RewardManager::new(),
+            reward_tracker: StorageRewardTracker::new(),
         }
     }
 
@@ -250,7 +250,7 @@ impl EconomicStorageManager {
                     let total_reward = base_reward_per_node + performance_bonus;
 
                     // Distribute base reward
-                    self.reward_manager.distribute_rewards(
+                    self.reward_tracker.distribute_rewards(
                         node_id.clone(),
                         total_reward,
                         format!("Payment with performance bonus for contract {}", contract_id),
@@ -264,7 +264,7 @@ impl EconomicStorageManager {
                     ).await?;
                 } else {
                     // Fallback to base reward if no metrics available
-                    self.reward_manager.distribute_rewards(
+                    self.reward_tracker.distribute_rewards(
                         node_id.clone(),
                         base_reward_per_node,
                         format!("Payment for contract {}", contract_id),
@@ -303,7 +303,7 @@ impl EconomicStorageManager {
 
                 // Distribute incentive rewards if performance meets thresholds
                 if incentive_reward > 0 {
-                    self.reward_manager.distribute_rewards(
+                    self.reward_tracker.distribute_rewards(
                         node_id.clone(),
                         incentive_reward,
                         format!("Performance incentive for contract {}", contract_id),
@@ -359,10 +359,10 @@ impl EconomicStorageManager {
                     avg_response_time: metrics.avg_response_time,
                     total_storage_provided: metrics.bandwidth_utilization as u64 * 1_000_000, // Convert to bytes
                     contracts_fulfilled: self.contract_manager.get_node_contract_count(node_id).await? as u32,
-                    current_tier: RewardTier::Basic, // Will be determined by reward manager
+                    current_tier: RewardTier::Basic, // Will be determined by reward tracker
                 };
 
-                self.reward_manager.update_provider_performance(performance);
+                self.reward_tracker.update_provider_performance(performance);
             }
         }
 
@@ -465,7 +465,7 @@ impl EconomicStorageManager {
     pub async fn get_statistics(&self) -> Result<EconomicStats> {
         let contract_stats = self.contract_manager.get_statistics().await?;
         let penalty_stats = self.penalty_enforcer.get_penalty_stats();
-        let reward_stats = self.reward_manager.get_reward_stats();
+        let reward_stats = self.reward_tracker.get_reward_stats();
 
         Ok(EconomicStats {
             total_contracts: contract_stats.total_contracts,
